@@ -118,7 +118,7 @@ These exist because the default failure mode of this kind of project is over-eng
 - GitHub Actions CI: lint + test + container-build on PR.
 - Issue template + PR template + automated PR-review workflow wired.
 - ADR template + ADR-0001 (initial stack) + ADR-0002 (monorepo) committed.
-- GitHub Project board: 9 epics + Phase 0 seed tickets loaded.
+- GitHub Project board: 8 epics + Phase 0 seed tickets loaded.
 - **Done =** `docker compose up` works locally; CI green on a trivial PR; board populated.
 
 ### Phase 1 — MVP monolith *(3–4 months @ 10 hrs/week)*
@@ -731,7 +731,7 @@ All 15 tickets created on the board at Phase 0 kickoff. `by-hand` marks steps wh
 | 12 | `docs: docs/adr/template.md + seed 0001-initial-stack.md` | by-claude | S | Foundation |
 | 13 | `docs: seed ADR 0002-monorepo.md` | by-claude | S | Foundation |
 | 14 | `chore: GitHub Project board v2 — columns, custom fields, labels` | **by-hand** | S | Foundation |
-| 15 | `chore: create 9 epic issues on the board (Phase 0–1)` | by-claude | S | Foundation |
+| 15 | `chore: create 8 epic issues on the board (Phase 0–1)` | by-claude | S | Foundation |
 
 The 5 `by-hand` items are the genuine learning moments — docker-compose, the GiST exclusion constraint (the domain-modeling heart of Phase 1), the PR-review workflow (the DevOps heart), the Project board setup, and the ADR for the initial stack.
 
