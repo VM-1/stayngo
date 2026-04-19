@@ -1,0 +1,57 @@
+Project Key,Issue Type,Summary,Description,Epic Link,Labels,Story Points,Dependencies
+{JIRA_PROJECT_KEY},Epic,Foundation / Repo / CI,"Epic Name: Foundation / Repo / CI
+Establish monorepo, Dockerized env, and CI baselines to build/test and publish images.",,"mvp infra ci docs",,
+{JIRA_PROJECT_KEY},Epic,Auth & Users,"Epic Name: Auth & Users
+Secure email/password auth with JWT and basic RBAC.",,"mvp backend auth",,
+{JIRA_PROJECT_KEY},Epic,Listings & Units,"Epic Name: Listings & Units
+CRUD and search for listings and units with validation and indexes.",,"mvp backend api db",,
+{JIRA_PROJECT_KEY},Epic,Availability & Holds,"Epic Name: Availability & Holds
+Per‑unit calendars and time‑boxed holds with TTL and expiry.",,"mvp backend api db",,
+{JIRA_PROJECT_KEY},Epic,Booking Flow,"Epic Name: Booking Flow
+Confirm booking via consumed holds and mock payment.",,"mvp backend api",,
+{JIRA_PROJECT_KEY},Epic,Admin Minimal,"Epic Name: Admin Minimal
+Approve listings and view bookings.",,"mvp frontend admin",,
+{JIRA_PROJECT_KEY},Epic,Frontend SPA,"Epic Name: Frontend SPA
+React+TS app with routing, auth, listings, search, and UX basics.",,"mvp frontend",,
+{JIRA_PROJECT_KEY},Epic,Testing & Quality,"Epic Name: Testing & Quality
+Test harnesses, coverage, lint/format, and e2e.",,"mvp testing ci",,
+{JIRA_PROJECT_KEY},Epic,Observability Basics,"Epic Name: Observability Basics
+Structured logging, ProblemDetails, health checks, correlation IDs.",,"mvp backend observability",,
+{JIRA_PROJECT_KEY},Epic,Seed & Fixtures,"Epic Name: Seed & Fixtures
+Seed data and fixtures to demo flows and support tests.",,"mvp db testing docs",,
+{JIRA_PROJECT_KEY},Task,Initialize monorepo with /backend /frontend /infra,"Create repo structure; add README, editorconfig, CODEOWNERS; enable C# nullable, analyzers, and TS strict.",Foundation / Repo / CI,"mvp infra docs",1,
+{JIRA_PROJECT_KEY},Task,Docker Compose for Postgres and app stubs,"Compose services for Postgres 16, backend, frontend; volumes and healthchecks; .env.sample and README run steps.",Foundation / Repo / CI,"mvp infra db",2,Initialize monorepo with /backend /frontend /infra
+{JIRA_PROJECT_KEY},Task,ADR-001 Monorepo & MVP stack,"Record decision drivers, options, decision, consequences; link from README.",Foundation / Repo / CI,"mvp docs architecture",1,Initialize monorepo with /backend /frontend /infra
+{JIRA_PROJECT_KEY},Task,EF Core initial schema & migrations,"Implement EF models and migrations for User/Role/Listing/Unit; enable migration pipeline.",Foundation / Repo / CI,"mvp backend db",2,Docker Compose for Postgres and app stubs
+{JIRA_PROJECT_KEY},Task,GitHub Actions build test and image,"PR: build+tests; main: build+tests+docker push; badges in README.",Foundation / Repo / CI,"mvp ci infra",3,Initialize monorepo with /backend /frontend /infra
+{JIRA_PROJECT_KEY},Task,User & Role tables with Admin seed,"Create tables and seed Admin user with secure password.",Auth & Users,"mvp backend db auth",1,EF Core initial schema & migrations
+{JIRA_PROJECT_KEY},Story,JWT auth register and login endpoints,"Email/password register/login; PBKDF2/BCrypt hashing; JWT with role claims.",Auth & Users,"mvp backend api auth",2,User & Role tables with Admin seed
+{JIRA_PROJECT_KEY},Task,Minimal authorization middleware and policies,"Attribute-based authorization; restrict Host/Admin operations.",Auth & Users,"mvp backend auth",1,JWT auth register and login endpoints
+{JIRA_PROJECT_KEY},Task,Listing & Unit domain and repository,"Entities, EF configurations, repositories with CRUD; unit tests.",Listings & Units,"mvp backend db",1,EF Core initial schema & migrations
+{JIRA_PROJECT_KEY},Story,Listings CRUD REST endpoints,"Create/read/update/delete listings and units; validate photoUrls as URLs.",Listings & Units,"mvp backend api",3,"Listing & Unit domain and repository|Minimal authorization middleware and policies"
+{JIRA_PROJECT_KEY},Story,Search API for location dates guests type,"GET /search with filters; add indexes for city,type,guests.",Listings & Units,"mvp backend api db",3,Listing & Unit domain and repository
+{JIRA_PROJECT_KEY},Task,React scaffold with Vite routing and UI kit,"Scaffold React TS app with routing/layout and axios client; smoke tests.",Frontend SPA,"mvp frontend",1,Initialize monorepo with /backend /frontend /infra
+{JIRA_PROJECT_KEY},Story,Auth pages register login and token storage,"Forms with validation; store JWT; logout.",Frontend SPA,"mvp frontend auth",2,"JWT auth register and login endpoints|React scaffold with Vite routing and UI kit"
+{JIRA_PROJECT_KEY},Story,Listings UI list create edit,"Pages for listing list/create/edit with validation and live refresh.",Frontend SPA,"mvp frontend listings",3,"Listings CRUD REST endpoints|React scaffold with Vite routing and UI kit"
+{JIRA_PROJECT_KEY},Task,Empty states and error toasts,"Friendly empty states and ProblemDetails-to-toast mapping.",Frontend SPA,"mvp frontend ux",1,Listings UI list create edit
+{JIRA_PROJECT_KEY},Story,Observability global error handler and health checks,"Serilog structured logging; ProblemDetails middleware; /health endpoint.",Observability Basics,"mvp backend infra",2,Docker Compose for Postgres and app stubs
+{JIRA_PROJECT_KEY},Task,Swagger OpenAPI and Postman collection,"Expose Swagger UI; export collection under /docs/api; publish as CI artifact.",Foundation / Repo / CI,"mvp backend api docs",1,"Listings CRUD REST endpoints|JWT auth register and login endpoints"
+{JIRA_PROJECT_KEY},Task,Backend test harnesses with Testcontainers,"xUnit unit+integration setup; run ephemeral Postgres; sample tests for auth and listings.",Testing & Quality,"mvp backend testing",2,"GitHub Actions build test and image|EF Core initial schema & migrations"
+{JIRA_PROJECT_KEY},Task,Frontend testing baseline with Jest RTL,"Configure Jest/RTL; add smoke test for listings page; report coverage.",Testing & Quality,"mvp frontend testing",1,React scaffold with Vite routing and UI kit
+{JIRA_PROJECT_KEY},Task,Seed data and fixtures,"Seed Hosts/Admin/Listings/Units; fixtures for tests; CLI seed command.",Seed & Fixtures,"mvp backend db testing",2,EF Core initial schema & migrations
+{JIRA_PROJECT_KEY},Task,Sample .env and secrets docs,"Provide .env.sample and secret guidance; ports and JWT secret.",Seed & Fixtures,"mvp infra docs",1,Docker Compose for Postgres and app stubs
+{JIRA_PROJECT_KEY},Task,Calendar and Hold tables migrations,"Create UnitCalendar and Hold tables; EF config and seed blocks.",Availability & Holds,"mvp backend db",2,EF Core initial schema & migrations
+{JIRA_PROJECT_KEY},Story,Availability query endpoint,"GET /units/{id}/availability returns per-day status; validate date ranges.",Availability & Holds,"mvp backend api",2,Calendar and Hold tables migrations
+{JIRA_PROJECT_KEY},Story,Create hold with atomic validation,"POST /holds validates overlaps and creates hold in serializable transaction; sets expiresAt.",Availability & Holds,"mvp backend api db",3,Availability query endpoint
+{JIRA_PROJECT_KEY},Story,Expire holds background job Asia Dubai,"Background job every minute to expire holds and free days; logs in Asia/Dubai.",Availability & Holds,"mvp backend infra scheduling",2,Create hold with atomic validation
+{JIRA_PROJECT_KEY},Task,Booking table and migration,"Create Booking table with fields and constraints; seed one booking.",Booking Flow,"mvp backend db",1,Calendar and Hold tables migrations
+{JIRA_PROJECT_KEY},Story,Confirm booking using mock payment,"POST /bookings/confirm consumes active hold; prevents overlap; writes booking.",Booking Flow,"mvp backend api",3,"Booking table and migration|Create hold with atomic validation"
+{JIRA_PROJECT_KEY},Story,Admin approve listing and view bookings,"Admin UI to approve listings and view bookings with filters.",Admin Minimal,"mvp frontend admin",2,"Listings CRUD REST endpoints|Confirm booking using mock payment"
+{JIRA_PROJECT_KEY},Story,FE unit availability calendar UI,"Calendar component showing open/blocked/booked; date selection.",Frontend SPA,"mvp frontend availability",2,Availability query endpoint
+{JIRA_PROJECT_KEY},Story,FE hold flow and countdown UI,"Initiate hold from calendar; show countdown; cancel hold.",Frontend SPA,"mvp frontend holds",3,"Create hold with atomic validation|FE unit availability calendar UI"
+{JIRA_PROJECT_KEY},Task,FE booking confirmation page and receipt,"Display booking summary and printable receipt after confirmation.",Frontend SPA,"mvp frontend booking",1,Confirm booking using mock payment
+{JIRA_PROJECT_KEY},Task,Edge-case tests overlap and concurrency,"Tests for overlapping holds/bookings and concurrent requests.",Testing & Quality,"mvp backend testing",2,"Create hold with atomic validation|Confirm booking using mock payment"
+{JIRA_PROJECT_KEY},Story,Playwright e2e browse hold confirm,"E2E scenario from search to booking confirmation in CI.",Testing & Quality,"mvp testing e2e",2,"FE hold flow and countdown UI|Confirm booking using mock payment"
+{JIRA_PROJECT_KEY},Task,Improve ProblemDetails and correlation IDs,"Map backend errors to FE toasts; add correlation id to logs and responses.",Observability Basics,"mvp backend frontend observability",1,Observability global error handler and health checks
+{JIRA_PROJECT_KEY},Task,README end-to-end setup and demo script,"Document full setup and a demo script to showcase flows.",Seed & Fixtures,"mvp docs",1,"Seed data and fixtures|Playwright e2e browse hold confirm"
+{JIRA_PROJECT_KEY},Task,Coverage threshold gates 70 percent,"Configure coverage thresholds for backend domain/services and FE components; fail CI when below.",Testing & Quality,"mvp testing ci",1,"Backend test harnesses with Testcontainers|Frontend testing baseline with Jest RTL"
