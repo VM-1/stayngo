@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/StayNGo.Api/StayNGo.Api.csproj" />
+    <Project Path="src/StayNGo.Domain/StayNGo.Domain.csproj" />
+    <Project Path="src/StayNGo.Infrastructure/StayNGo.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/StayNGo.IntegrationTests/StayNGo.IntegrationTests.csproj" />
+    <Project Path="tests/StayNGo.UnitTests/StayNGo.UnitTests.csproj" />
+  </Folder>
+</Solution>
