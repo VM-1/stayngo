@@ -35,3 +35,6 @@ __pycache__/
 # Test outputs
 TestResults/
 coverage/
+
+# Obsidian — private daily scratchpad (polished thinking graduates to Concepts/ADRs)
+docs/Journal/

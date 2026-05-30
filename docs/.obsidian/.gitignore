@@ -1,0 +1,5 @@
+# Per-machine Obsidian state — ignore churn, commit the rest of .obsidian/
+workspace.json
+workspace-mobile.json
+workspace.json.bak
+cache
