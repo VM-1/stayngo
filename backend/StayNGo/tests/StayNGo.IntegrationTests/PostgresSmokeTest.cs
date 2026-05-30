@@ -1,7 +1,6 @@
 using FluentAssertions;
 using Npgsql;
 using Testcontainers.PostgreSql;
-using Xunit;
 
 namespace StayNGo.IntegrationTests;
 
@@ -15,7 +14,7 @@ public class PostgresSmokeTest : IAsyncLifetime
     public Task DisposeAsync() => _container.DisposeAsync().AsTask();
 
     [Fact]
-    public async Task Postgres_container_is_reachable()
+    public async Task Postgres_container_is_reachable() 
     {
         await using var conn = new NpgsqlConnection(_container.GetConnectionString());
         await conn.OpenAsync();
