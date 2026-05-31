@@ -5,35 +5,14 @@ using StayNGo.Domain.Entities;
 using StayNGo.Domain.Enums;
 using StayNGo.Domain.ValueObjects;
 using StayNGo.Infrastructure.Persistence;
-using Testcontainers.PostgreSql;
 
 namespace StayNGo.IntegrationTests;
 
-public class BookingExclusionConstraintTests : IAsyncLifetime
+public class BookingExclusionConstraintTests : BaseIntegrationTests
 {
-    private readonly PostgreSqlContainer _pg = new PostgreSqlBuilder()
-        .WithImage("postgres:16-alpine")
-        .Build();
-
-    private StayNGoDbContext _db = null!;
-
-    public async Task InitializeAsync()
+   
+    protected BookingExclusionConstraintTests(IntegrationTestFactory factory, StayNGoDbContext dbContext) : base(factory)
     {
-        await _pg.StartAsync();
-        var options = new DbContextOptionsBuilder<StayNGoDbContext>()
-            .UseNpgsql(_pg.GetConnectionString())
-            .UseSnakeCaseNamingConvention()
-            .Options;
-
-        _db = new StayNGoDbContext(options);
-
-        await _db.Database.MigrateAsync();
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _db.DisposeAsync();
-        await _pg.DisposeAsync();
     }
 
     [Fact]
@@ -52,7 +31,7 @@ public class BookingExclusionConstraintTests : IAsyncLifetime
 
         // Act
         // Add Second Booking that has overlaps
-        _db.Bookings.Add(new Booking
+        DbContext.Bookings.Add(new Booking
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.UtcNow,
@@ -63,7 +42,7 @@ public class BookingExclusionConstraintTests : IAsyncLifetime
             Status = BookingStatus.Confirmed,
         });
 
-        var act = async () => await _db.SaveChangesAsync();
+        var act = async () => await DbContext.SaveChangesAsync();
         
         // Assert - Postgres raised 23P01 (exclusion_violation)
         var ex = await act.Should().ThrowExactlyAsync<DbUpdateException>();
@@ -82,8 +61,8 @@ public class BookingExclusionConstraintTests : IAsyncLifetime
             ClerkId = Guid.NewGuid().ToString(),
         };
 
-        _db.Users.Add(newUser);
-        await _db.SaveChangesAsync();
+        DbContext.Users.Add(newUser);
+        await DbContext.SaveChangesAsync();
         return newUser;
     }
 
@@ -103,8 +82,8 @@ public class BookingExclusionConstraintTests : IAsyncLifetime
             Status = ListingStatus.Published,
             Price = new Money(1000, "USD")
         };
-        _db.Listings.Add(newListing);
-        await _db.SaveChangesAsync();
+        DbContext.Listings.Add(newListing);
+        await DbContext.SaveChangesAsync();
         return newListing;
     }
 
@@ -121,8 +100,8 @@ public class BookingExclusionConstraintTests : IAsyncLifetime
             TotalPrice = new Money(20000, "USD"),
             Status = status,
         };
-        _db.Bookings.Add(b);
-        await _db.SaveChangesAsync();
+        DbContext.Bookings.Add(b);
+        await DbContext.SaveChangesAsync();
         return b;
     }
 }
