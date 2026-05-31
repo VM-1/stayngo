@@ -8,7 +8,7 @@ from a crash, the postmaster (the supervisor process that manages the
 cluster) binds port 5432 first, but for the next 1–5 seconds it
 **rejects** incoming connections with `FATAL: the database system is
 starting up`. `pg_isready` returns exit code 1 during this window and
-0 only once the server can actually serve queries. Compose'swha
+0 only once the server can actually serve queries. Compose's
 `depends_on.condition: service_healthy` blocks the api container from
 starting until this check passes, so EF Core never connects too early.
 

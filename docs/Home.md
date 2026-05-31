@@ -19,7 +19,7 @@ db-notes are linkable notes, not a parallel copy. Conventions: see `CLAUDE.md` i
 - [[DevOps]] — *to create*
 
 ## Canonical artifacts (ticket-driven)
-- ADRs → `adr/` — [[0001-initial-stack|0001 · Initial stack]], [[0002-monorepo|0002 · Monorepo]]
+- ADRs → `adr/` — [[0001-initial-stack|0001 · Initial stack]], [[0002-monorepo|0002 · Monorepo]], [[0003-obsidian-vault-in-docs|0003 · Obsidian vault]]
 - DB learning notes → `db-notes/` — [[100-local-dev-compose|100 · Local dev compose]]
 - Retros → `retros/`
 - Specs & plans → `superpowers/`

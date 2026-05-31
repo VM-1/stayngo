@@ -6,5 +6,6 @@
   "showUnsupportedFiles": false,
   "promptDelete": true,
   "newFileLocation": "folder",
-  "newFileFolderPath": "Concepts"
+  "newFileFolderPath": "Concepts",
+  "readableLineLength": true
 }
