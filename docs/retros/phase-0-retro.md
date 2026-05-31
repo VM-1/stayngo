@@ -8,9 +8,7 @@ created: 2026-05-31
 # Phase 0 retro — StayNGo
 
 > Phase 0 ran ~2026-04-20 (plan written) → 2026-05-31 (closeout). Goal per the
-> [plan](../superpowers/plans/2026-04-20-staynGo-phase-0.md): a monorepo with CI, a
-> docker-compose local env, a Project board, issue/PR templates, ADRs, and 8 seeded epics —
-> all green on a trivial PR, ready for Phase 1. Honest 1-pager per Principle 3: *real
+> [plan](../superpowers/plans/2026-04-20-staynGo-phase-0.md): a Monorepo with CI, a docker-compose local env, a Project board, issue/PR templates, ADRs, and 8 seeded epics — all green on a trivial PR, ready for Phase 1. Honest 1-pager per Principle 3: *real
 > discipline, not theater.* Full session detail lives in [[2026-05-31]] (Journal).
 
 ---
@@ -86,58 +84,44 @@ Net: the *intent* of Phase 0 is met; two checklist items were consciously substi
 
 ## Reflection
 
-> **Draft bullets below are scaffolding from the evidence — confirm, cut, or rewrite each in your
-> own words.** Per the vault learning rule, this section is yours; the value is your honest read,
-> not my reconstruction. Tell me to blank it and you'll write from scratch if you'd rather.
-
-### What worked *(draft)*
+### What worked
 
 - Putting the no-double-booking invariant **in the schema** (EXCLUDE + Testcontainers) instead of
   handler logic — the canonical Phase-0 lesson, and it actually landed.
 - Reviewing generated migration SQL before applying caught a bug that would've failed at runtime.
 - `[by-hand]` on the domain-heavy task (12) — the learning friction was the point.
 
-### What didn't *(draft)*
+### What didn't
 
-- `Money` took 3 swings — was that healthy iteration, or should a value-object shape have been
-  pinned before touching EF? *(your call)*
-- The plan assumed `text` enums and a bare `bigint` price; reality diverged early. Did the plan
-  under-specify the domain, or is divergence just expected once you model for real? *(your call)*
+- `Money` took 3 swings — net **mostly healthy**: the `record class` / `init` / private-ctor
+  changes were EF Core complex-type *discovery* (the point of Task 12), but the
+  `decimal`→`long AmountCents` and `Multiply(Money)`→`Multiply(int)` swings were settled
+  value-object patterns I should've pinned on paper first (Principle 4: domain before mapping).
+- The plan assumed `text` enums and a bare `bigint` price; reality diverged early. Some divergence
+  is expected once you model for real — but `text`→`int` and `bigint`→`Money` were *domain* calls
+  that belonged in the spec, not discovered mid-migration.
 
-### What I'd change *(draft)*
+### What I'd change
 
 - Decide value-object shapes (Money, DateRange) on paper before wiring EF mapping.
-- If a planned acceptance item is going to be waived (Task 14, db-note path), note the waiver *at the
-  moment of the decision*, not at closeout.
+- If a planned acceptance item is going to be waived (Task 14, db-note path), note the waiver *at the moment of the decision*, not at closeout.
 
-### Cadence honesty check *(yours — Principle 9)*
+### Cadence honesty check *(Principle 9)*
 
-Plan written 2026-04-20, closed 2026-05-31 ≈ 6 calendar weeks. Did the **3× evening-work multiplier**
-hold for the tasks you actually did? Where did time really go (hint from the journal: Task 12 + the
-vault)? *Only you have the hours — fill this in.*
-
-### Open question: the Obsidian vault *(flagging per Principle 10)*
-
-The vault wasn't in the plan. It serves Principle 11 (teach) — but it's also exactly the kind of
-**invisible work** Principle 1 warns kills solo momentum, and the kind of complexity Principle 2 says
-to add only when it hurts *or* as a **named learning milestone**. Honest question for you: was it a
-justified learning-infrastructure investment, or scope creep dressed as discipline? If you keep it,
-consider writing it down as a deliberate decision (ADR or a one-liner in the spec) so it's *named*,
-not accidental.
----
+~6 calendar weeks (plan 2026-04-20 → close 2026-05-31). Hours weren't logged, so the literal 3×
+multiplier can't be confirmed — but time clearly pooled where the *domain* was, not the scaffolding:
+Task 12 (Money / DateRange / EXCLUDE modelling) and the unplanned Obsidian vault ate the budget,
+while the Tasks 1–11/13 scaffolding ran roughly to estimate. Phase 1 fix: log actual hours per
+ticket so Principle 9 is measured, not guessed.
 
 ## Carry into Phase 1
 
 - **First ticket = Identity — Clerk (#2):** restore the stashed `Services/` scaffold + the exact
   JWT-bearer + `.csproj` diff recorded in [[2026-05-31]]; add the `Me` endpoint + integration test.
-- **Test harness:** adopt shared-container `WebApplicationFactory` + `IClassFixture` + truncate cleanup —
-  with **direct handler injection, not MediatR** (CLAUDE.md hard rule).
+- **Test harness:** adopt shared-container `WebApplicationFactory` + `IClassFixture` + truncate cleanup — with **direct handler injection, not MediatR** (CLAUDE.md hard rule).
 - **Discipline:** keep explicit `= N` on every enum value (the EXCLUDE constraint depends on `status = 2`).
 - **Decide `FluentAssertions` future** — v8+ is commercial; on v6.12.2 now; switch to `AwesomeAssertions` if upgrading past v7.
-- **Board polish + sub-tickets:** set `Status = Backlog` / `Phase = N` on the 8 epics; create the actual
-  Phase 1 sub-tickets under #2–#8.
-- **Memory layer:** the `memory/` dir is empty (the journal's claimed persisted memories aren't there) —
-  rebuild from the journal when convenient.
+- **Sub-tickets:** create the actual Phase 1 sub-tickets under #2–#8 (board fields + #1→Done already set).
 
 ## Links
 
