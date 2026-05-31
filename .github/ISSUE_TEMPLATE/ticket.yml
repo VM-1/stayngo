@@ -1,6 +1,6 @@
 name: Work item
 description: StayNGo ticket
-title: "[feature|chore|bug|refactor|adr|spike] <imperative summary>"
+title: "[feature|chore|bug|refactor|adr|spike|internal] <imperative summary>"
 labels: ["triage"]
 body:
   - type: dropdown
@@ -25,17 +25,22 @@ body:
     validations:
       required: true
   - type: textarea
+    id: internal_value
+    attributes:
+      label: Value — what this gives us (required for [internal] tickets)
+      description: "Architecture/infra ([internal]) tickets must state the benefit and the need that triggered it — not just the action. E.g. '/me latency → add Redis caching'; 'JIT profile goes stale → add profile-sync webhook'. Leave blank for pure feature tickets."
+  - type: textarea
     id: context
     attributes:
       label: Context
-      description: "1-3 sentences. Why this ticket exists; what flow/problem it serves."
+      description: "1-3 sentences, in business terms. Why this ticket exists; what user flow/problem it serves. WHAT + WHY only — no code or implementation detail (the implementer owns the how)."
     validations:
       required: true
   - type: textarea
     id: acceptance
     attributes:
       label: Acceptance criteria
-      description: "Checklist bullets. For tickets that introduce a new concept, include a bullet like: 'docs/db-notes/NNN-<topic>.md written in own words (~300 words)'."
+      description: "Business-observable outcomes as checklist bullets — no code/implementation detail. For tickets that introduce a new concept, include a bullet like: 'docs/db-notes/NNN-<topic>.md written in own words (~300 words)'."
       value: |
         - [ ]
         - [ ]
