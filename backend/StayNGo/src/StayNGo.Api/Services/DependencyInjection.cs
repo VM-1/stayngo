@@ -22,7 +22,8 @@ public static class DependencyInjection
     private static void ConfigureTokenValidation(IServiceCollection services, IConfiguration configuration)
     {
         var authority = configuration["Clerk:Authority"];
-            
+
+        services.AddAuthorization();
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -31,7 +32,6 @@ public static class DependencyInjection
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    
                     ValidateAudience = false,
 
                     ValidateLifetime = true,

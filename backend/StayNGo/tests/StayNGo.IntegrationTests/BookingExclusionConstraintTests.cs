@@ -8,13 +8,8 @@ using StayNGo.Infrastructure.Persistence;
 
 namespace StayNGo.IntegrationTests;
 
-public class BookingExclusionConstraintTests : BaseIntegrationTests
+public class BookingExclusionConstraintTests(IntegrationTestFactory factory) : BaseIntegrationTests(factory)
 {
-   
-    protected BookingExclusionConstraintTests(IntegrationTestFactory factory, StayNGoDbContext dbContext) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task Overlapping_confirmed_bookings_are_rejected()
     {
