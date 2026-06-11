@@ -22,5 +22,14 @@ export default defineConfig([
     rules: {
       "no-restricted-imports": ["error", "lodash", "fs"],
     },
-  }
+  },
+  {
+    // shadcn/ui components intentionally co-export cva variant helpers
+    // (buttonVariants, badgeVariants) alongside the component, which trips
+    // react-refresh/only-export-components. Fast Refresh still works fine here.
+    files: ["src/components/ui/**/*.{ts,tsx}"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
 ]);
