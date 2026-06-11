@@ -49,7 +49,7 @@ jobs:
       - name: Install
         run: npm ci
       - name: Typecheck
-        run: npx tsc --noEmit
+        run: npx tsc -b
       - name: Build
         run: npm run build
 
