@@ -1,6 +1,4 @@
 import Container from "@/components/Container";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 
 export default function LandingPage() {
@@ -15,24 +13,34 @@ export default function LandingPage() {
           simple place.
         </p>
         <div className="flex gap-3">
-          <Button asChild size="lg">
-            <Link to="/sign-up">Get started</Link>
-          </Button>
-          <Button asChild variant="outline" size="lg">
-            <Link to="/search">Browse stays</Link>
-          </Button>
+          <Link
+            to="/sign-up"
+            className="rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white hover:bg-indigo-700"
+          >
+            Get started
+          </Link>
+          <Link
+            to="/search"
+            className="rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          >
+            Browse stays
+          </Link>
         </div>
         <div className="mt-2 flex w-full max-w-xl items-center gap-3 rounded-xl border border-slate-200 bg-white p-2 pl-5 shadow-sm">
-          <Input
+          <input
             type="search"
             disabled
             aria-label="Search stays"
             placeholder="Where to? · Anytime · Add guests"
-            className="flex-1 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"
+            className="flex-1 bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none disabled:cursor-not-allowed"
           />
-          <Button type="button" disabled>
+          <button
+            type="button"
+            disabled
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white opacity-40 disabled:cursor-not-allowed"
+          >
             Search
-          </Button>
+          </button>
         </div>
         <p className="text-xs text-slate-400">Search launches in Phase 2</p>
       </Container>
