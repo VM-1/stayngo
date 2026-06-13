@@ -77,6 +77,7 @@ When introducing a concept/pattern/technique the user didn't name:
 - Never auto-approve a PR — only comment.
 
 ## See also
+- **Working status — read at session start, update at session end: ./STATUS.md**
 - Project brief: ./StayNGo.md
 - ADRs: ./docs/adr/
 - Domain invariants: ./StayNGo.md §5.3

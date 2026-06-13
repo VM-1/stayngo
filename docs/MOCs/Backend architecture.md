@@ -8,8 +8,7 @@ created: 2026-05-29
 # 🏗️ Backend architecture — MOC
 
 Evolution: vertical slices → modular monolith → async messaging → CQRS read models. Complexity is added
-only when the design hurts **or** as a named learning milestone (Principle 2). Be precise about what you're
-actually doing vs. what you're naming it (Principle 8).
+only when the design hurts **or** as a named learning milestone (Principle 2). Be precise about what you're actually doing vs. what you're naming it (Principle 8).
 
 ## Phase 1 — vertical slices
 - [[Vertical slice architecture]] — `Features/<Domain>/<Action>/`
