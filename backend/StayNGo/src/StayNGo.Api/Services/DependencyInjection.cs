@@ -9,6 +9,16 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddCors(options =>
+        {
+            var origins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+
+            options.AddDefaultPolicy(policy =>
+                policy.WithOrigins(origins)
+                    .AllowAnyHeader() 
+                    .AllowAnyMethod());
+        });
+        
         services.AddEndpoints(typeof(Program).Assembly);
         services.AddEndpointsApiExplorer();
 
