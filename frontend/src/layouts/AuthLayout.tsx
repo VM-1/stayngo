@@ -1,11 +1,10 @@
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import Logo from "@/components/Logo";
 
 export const AuthLayout = () => {
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-slate-50 px-4">
-      <Link to="/" className="text-xl font-semibold tracking-tight text-slate-900">
-        StayNGo
-      </Link>
+    <div className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-muted/40 px-4">
+      <Logo />
       <Outlet />
     </div>
   );

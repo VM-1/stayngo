@@ -168,5 +168,32 @@ Flows (FigJam-style arrows optional — skip if design file)
 - State conveyed by icon+text, never color alone.
 - Card = `card` fill + `border` stroke + `radius/xl` + `Shadow/sm`.
 - One `<h1>` equivalent (H2 style) per screen; headings don't skip levels.
+
+---
+
+## 8. Build result (v1 — 2026-06-14)
+
+**Figma file:** https://www.figma.com/design/LwjzqLdVmpa0VbIZrjcMnH (StayNGo — Design System & Screens)
+
+**Foundations:** 4 variable collections — `Primitives` (36 colors), `Color` (21 semantic
+tokens, Light/Dark modes, aliased), `Spacing` (16), `Radius` (7). 12 text styles (Inter +
+JetBrains Mono). 3 elevation effect styles. All variables scoped; semantics alias primitives.
+
+**Components (token-bound, variant sets):** Button (5×3 + Label prop), Badge (6 + Label),
+Input (4 states), Avatar (2×3), Logo, 19 lucide icon components, Listing Card (4 text props),
+Header (signed-out / signed-in), Footer.
+
+**Screens — Desktop (14):** Landing, Sign in, Sign up, Search results, Listing detail,
+Reserve (with 409-conflict alert), Booking confirmed, Account, Create/edit listing (Draft),
+My Trips (guest/host tabs), Host dashboard (listings), Host booking requests, Host placeholder, 404.
+
+**Screens — Mobile (3):** Landing, Search results, Nav Sheet overlay.
+
+**Cover** page + **Foundations** documentation page (swatches, type/spacing/radius/elevation specimens).
+
+**File pages:** Cover · Foundations · Components · Screens — Desktop · Screens — Mobile.
+
+Every screen is composed from component instances bound to design tokens — design-to-code stays
+faithful to the shipped shadcn/slate/teal baseline. Build-resume state: `.figma-build-state.json`.
 </content>
 </invoke>

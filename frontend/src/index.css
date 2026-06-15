@@ -2,32 +2,35 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* shadcn/ui design tokens — slate base, indigo-600 brand primary (ADR-0004). */
+/* shadcn/ui design tokens — mauve-gray base, plum-600 brand primary ("Aubergine Soirée" palette). */
 :root {
   --radius: 0.625rem;
 
   --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.205 0.009 317.7);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: oklch(0.205 0.009 317.7);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
+  --popover-foreground: oklch(0.205 0.009 317.7);
 
-  --primary: oklch(0.585 0.233 277.117); /* indigo-600 */
+  --primary: oklch(0.489 0.132 332.7); /* plum-600 */
   --primary-foreground: oklch(1 0 0);
 
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
+  --secondary: oklch(0.956 0.006 334.0);
+  --secondary-foreground: oklch(0.258 0.011 319.5);
+  --muted: oklch(0.956 0.006 334.0);
+  --muted-foreground: oklch(0.564 0.017 332.5);
+  --accent: oklch(0.956 0.006 334.0);
+  --accent-foreground: oklch(0.258 0.011 319.5);
 
   --destructive: oklch(0.577 0.245 27.325);
-
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.585 0.233 277.117); /* indigo to match brand focus */
+  --success: oklch(0.596 0.127 163.2); /* emerald-600 — status only, not brand */
+  --success-foreground: oklch(1 0 0);
+  --warning: oklch(0.555 0.146 49.0); /* amber-700 — readable on soft bg */
+  --warning-foreground: oklch(1 0 0);
+  --border: oklch(0.914 0.010 335.5);
+  --input: oklch(0.914 0.010 335.5);
+  --ring: oklch(0.489 0.132 332.7); /* plum to match brand focus */
 }
 
 @theme inline {
@@ -51,6 +54,10 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

@@ -1,5 +1,6 @@
 import Container from "@/components/Container";
 import ProfileCard, { ProfileSkeleton } from "@/components/ProfileCard";
+import { Text } from "@/components/ui/text";
 import { useMe } from "@/features/identity/useMe";
 
 import { useClerk } from "@clerk/react";
@@ -13,20 +14,22 @@ export default function AccountPage() {
   return (
     <Container className="py-12">
       <div className="mx-auto flex max-w-xl flex-col gap-4">
-        <h1 className="text-2xl font-semibold text-slate-900">Your account</h1>
+        <Text variant="h2" as="h1">Your account</Text>
 
         {isPending ? (
           <ProfileSkeleton />
         ) : isError ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-7 text-sm text-slate-600">
-            We couldn’t load your profile.{" "}
-            <button type="button" onClick={() => refetch()}
-              className="font-medium text-indigo-600 hover:underline">
-              Try again
-            </button>
+          <div className="rounded-2xl border border-border bg-card p-7">
+            <Text variant="small" tone="muted">
+              We couldn’t load your profile.{" "}
+              <button type="button" onClick={() => refetch()}
+                className="font-medium text-primary hover:underline">
+                Try again
+              </button>
+            </Text>
           </div>
         ) : (
-          <ProfileCard name={data.displayName} email={data.email} onSignOut={() => signOut().then(() => queryClient.clear)} />
+          <ProfileCard name={data.displayName} email={data.email} onSignOut={() => signOut().then(() => queryClient.clear())} />
         )}
       </div>
     </Container>

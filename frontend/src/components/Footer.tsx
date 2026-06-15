@@ -1,4 +1,5 @@
 import Container from "@/components/Container";
+import { Text } from "@/components/ui/text";
 
 const footerLinks = [
   { label: "Terms", href: "/terms" },
@@ -8,9 +9,9 @@ const footerLinks = [
 
 export const Footer = () => {
   return (
-    <footer className="border-t border-slate-200 bg-white">
-      <Container className="flex h-16 items-center justify-between text-xs text-slate-500">
-        <span>© 2026 StayNGo</span>
+    <footer className="border-t border-border bg-background">
+      <Container className="flex h-16 items-center justify-between">
+        <Text variant="caption" tone="muted">© 2026 StayNGo</Text>
 
         <nav aria-label="Footer navigation">
           <ul className="flex items-center gap-3">
@@ -19,16 +20,18 @@ export const Footer = () => {
                 {index > 0 && (
                   <span
                     aria-hidden="true"
-                    className="size-1 rounded-full bg-slate-300"
+                    className="size-1 rounded-full bg-border"
                   />
                 )}
 
-                <a
-                  href={href}
-                  className="transition-colors hover:text-slate-900"
+                <Text
+                  asChild
+                  variant="caption"
+                  tone="muted"
+                  className="transition-colors hover:text-foreground"
                 >
-                  {label}
-                </a>
+                  <a href={href}>{label}</a>
+                </Text>
               </li>
             ))}
           </ul>
