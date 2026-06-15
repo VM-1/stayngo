@@ -2,7 +2,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* shadcn/ui design tokens — mauve-gray base, plum-600 brand primary ("Aubergine Soirée" palette). */
+/* shadcn/ui design tokens — mauve-gray base, plum-600 brand primary ("Aubergine Soirée" palette; ADR-0005). */
 :root {
   --radius: 0.625rem;
 

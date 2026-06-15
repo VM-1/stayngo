@@ -74,8 +74,8 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          <div className="mt-16 self-stretch w-full p-10 bg-primary rounded-2xl inline-flex justify-between items-center overflow-hidden w">
-            <div className="size- inline-flex flex-col justify-start items-start gap-1 overflow-hidden">
+          <div className="mt-16 self-stretch w-full p-10 bg-primary rounded-2xl inline-flex justify-between items-center overflow-hidden">
+            <div className="inline-flex flex-col justify-start items-start gap-1 overflow-hidden">
               <Text variant="h3" tone="inverted">
                 Have a place to share?
               </Text>
@@ -83,7 +83,7 @@ export default function LandingPage() {
                 Earn by hosting travellers on StayNGo.
               </Text>
             </div>
-            <Button data-size="lg" variant="secondary">
+            <Button size="lg" variant="secondary">
               Become a host
             </Button>
           </div>

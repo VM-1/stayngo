@@ -43,6 +43,7 @@ For complex widgets outside shadcn's core, prefer **Tailwind-native headless lib
 
 - Elaborates — does not supersede — ADR-0001's frontend line; also records the React 18 → 19 drift in passing.
 - Clerk's own UI coexists unchanged; shadcn is for our components, not for restyling Clerk internals.
+- The slate + indigo-600 palette referenced above was a placeholder; the deliberate brand palette is recorded in **ADR-0005 ("Aubergine Soirée")**.
 
 ## References
 
