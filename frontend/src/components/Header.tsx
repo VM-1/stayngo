@@ -1,5 +1,7 @@
 import Container from "@/components/Container";
+import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 import {
   ClerkLoaded,
   ClerkLoading,
@@ -8,17 +10,15 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export const Header = () => {
   return (
     <header>
-      <Container className="flex h-16 items-center justify-between border-b border-slate-200 bg-white">
-        <Link to="/" className="text-xl font-semibold text-slate-900">
-          StayNGo
-        </Link>
+      <Container className="flex h-16 items-center justify-between border-b border-border bg-background">
+        <Logo />
         <ClerkLoading>
-          <div className="h-9 w-40 animate-pulse rounded-lg bg-slate-100" />
+          <div className="h-9 w-40 animate-pulse rounded-lg bg-muted" />
         </ClerkLoading>
         <ClerkLoaded>
           <Show when="signed-out">
@@ -35,18 +35,22 @@ export const Header = () => {
           </Show>
           <Show when="signed-in">
             <div className="flex items-center gap-5">
-              <NavLink
-                to="/search"
-                className="hidden text-sm font-medium text-slate-600 hover:text-slate-900 sm:inline"
+              <Text
+                asChild
+                variant="label"
+                tone="muted"
+                className="hidden hover:text-foreground sm:inline"
               >
-                Browse stays
-              </NavLink>
-              <NavLink
-                to="/my/bookings"
-                className="hidden text-sm font-medium text-slate-600 hover:text-slate-900 sm:inline"
+                <NavLink to="/search">Browse stays</NavLink>
+              </Text>
+              <Text
+                asChild
+                variant="label"
+                tone="muted"
+                className="hidden hover:text-foreground sm:inline"
               >
-                My bookings
-              </NavLink>
+                <NavLink to="/my/bookings">My bookings</NavLink>
+              </Text>
               <UserButton />
             </div>
           </Show>

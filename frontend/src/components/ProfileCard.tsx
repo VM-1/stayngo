@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Text } from "@/components/ui/text";
 
 type ProfileCardProps = {
   name: string;
@@ -29,16 +30,11 @@ export default function ProfileCard({ name, email, onSignOut }: ProfileCardProps
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-0.5">
-            <span className="text-lg font-semibold text-foreground">{name}</span>
-            <span className="text-sm text-muted-foreground">{email}</span>
+            <Text variant="h4" as="span" className="text-lg">{name}</Text>
+            <Text variant="small" as="span" tone="muted">{email}</Text>
           </div>
         </div>
-        <Badge
-          variant="secondary"
-          className="border-transparent bg-emerald-50 px-2.5 py-1 text-emerald-700"
-        >
-          Signed in
-        </Badge>
+        <Badge variant="success">Signed in</Badge>
       </div>
       <hr className="border-border" />
       <div className="flex items-center justify-end">
@@ -52,21 +48,21 @@ export default function ProfileCard({ name, email, onSignOut }: ProfileCardProps
 
 export function ProfileSkeleton() {
   return (
-    <div className="flex animate-pulse flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+    <div className="flex animate-pulse flex-col gap-5 rounded-2xl border border-border bg-card p-7 shadow-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="size-16 rounded-full bg-slate-100" />
+          <div className="size-16 rounded-full bg-muted" />
           <div className="flex flex-col gap-2">
-            <div className="h-4 w-32 rounded bg-slate-100" />
-            <div className="h-3 w-40 rounded bg-slate-100" />
+            <div className="h-4 w-32 rounded bg-muted" />
+            <div className="h-3 w-40 rounded bg-muted" />
           </div>
         </div>
-        <div className="h-6 w-20 rounded-full bg-slate-100" />
+        <div className="h-6 w-20 rounded-full bg-muted" />
       </div>
-      <hr className="border-slate-200" />
+      <hr className="border-border" />
       <div className="flex items-center justify-between">
-        <div className="h-4 w-48 rounded bg-slate-100" />
-        <div className="h-9 w-24 rounded-lg bg-slate-100" />
+        <div className="h-4 w-48 rounded bg-muted" />
+        <div className="h-9 w-24 rounded-lg bg-muted" />
       </div>
     </div>
   );
