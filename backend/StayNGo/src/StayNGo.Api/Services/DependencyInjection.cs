@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using StayNGo.Api.Exceptions;
 using StayNGo.Api.Features;
 using StayNGo.Api.Services.Interfaces;
+using StayNGo.Api.Services.OpenApi;
 
 namespace StayNGo.Api.Services;
 
@@ -15,9 +17,17 @@ public static class DependencyInjection
 
             options.AddDefaultPolicy(policy =>
                 policy.WithOrigins(origins)
-                    .AllowAnyHeader() 
+                    .AllowAnyHeader()
                     .AllowAnyMethod());
         });
+
+        services.AddOpenApi(options =>
+        {
+            options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+        });
+        
+        services.AddExceptionHandler<GlobalExceptionHandler>();
+        services.AddProblemDetails();
         
         services.AddEndpoints(typeof(Program).Assembly);
         services.AddEndpointsApiExplorer();
@@ -54,6 +64,7 @@ public static class DependencyInjection
     {
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IListingService, ListingService>();
 
         return services;
     }

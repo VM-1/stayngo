@@ -1,6 +1,6 @@
 ﻿using StayNGo.Domain.Enums;
 using StayNGo.Domain.Interfaces;
-using StayNGo.Domain.ValueObjects;
+using StayNGo.Domain.ValueObjects;  
 
 namespace StayNGo.Domain.Entities;
 
@@ -11,7 +11,7 @@ public class Booking : IEntity
     public DateTime? UpdatedAt { get; set; }
     
     public DateRange During { get; set; }
-    public Money TotalPrice { get; set; }
+    public Money TotalPrice { get; set; } = null!;
     public BookingStatus Status { get; set; }
     public Guid GuestUserId { get; set; }
     public User Guest { get; set; } = null!;

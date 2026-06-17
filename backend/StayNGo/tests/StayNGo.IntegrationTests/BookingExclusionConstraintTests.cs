@@ -4,7 +4,6 @@ using Npgsql;
 using StayNGo.Domain.Entities;
 using StayNGo.Domain.Enums;
 using StayNGo.Domain.ValueObjects;
-using StayNGo.Infrastructure.Persistence;
 
 namespace StayNGo.IntegrationTests;
 
@@ -63,20 +62,12 @@ public class BookingExclusionConstraintTests(IntegrationTestFactory factory) : B
 
     private async Task<Listing> SeedListingAsync(User owner)
     {
-        var newListing = new Listing
-        {
-            Id = Guid.NewGuid(),
-            OwnerUserId = owner.Id,
-            Title = "Test Listing",
-            Description = "For exclusion-constraint tests",
-            ImageUrls = [],
-            MainImageUrl = "https://placeholder.local/main.jpg",
-            Location = "Test Location",
-            TimeZoneId = "America/New_York",
-            Capacity = 4,
-            Status = ListingStatus.Published,
-            Price = new Money(1000, "USD")
-        };
+        var newListing = Listing.StartDraft(owner.Id);
+        newListing.UpdateDraftDetails(title:"Test Listing", description: "For exclusion-constraint tests",
+            location: "Test Location", timeZoneId: "America/New_York",
+            price: new Money(1000, "USD"), capacity: 4,
+            mainImageUrl:"https://placeholder.local/main.jpg", imageUrls:[]);
+    
         DbContext.Listings.Add(newListing);
         await DbContext.SaveChangesAsync();
         return newListing;
