@@ -15,7 +15,7 @@ public record ListingContract
     public required List<string> ImageUrls { get; init; } = [];
     public required string? MainImageUrl { get; init; }
     public required string? Location { get; init; }
-    public required string? TimeZoneId { get; init; }
+    public required string? TimeZone { get; init; }
     public required ListingStatus Status { get; init; }
     public required MoneyContract? Price { get; init; }
     public required int? Capacity { get; init; }
@@ -33,7 +33,7 @@ public record ListingContract
             ImageUrls = listing.ImageUrls,
             MainImageUrl = listing.MainImageUrl,
             Location = listing.Location,
-            TimeZoneId = listing.TimeZoneId?.ToString(),
+            TimeZone = listing.TimeZone?.ToString(),
             Status = listing.Status,
             Price = MoneyContract.From(listing.Price),
             Capacity = listing.Capacity

@@ -19,7 +19,7 @@ public class ListingService(StayNGoDbContext db, ICurrentUserService currentUser
         var listing = Listing.StartDraft(user.Id);
 
         listing.UpdateDraftDetails(model.Title, model.Description,
-            model.Location, model.TimeZoneId,
+            model.Location, model.TimeZone,
             model.MainImageUrl, model.ImageUrls,
             model.Price?.ToDomain(), model.Capacity);
 
@@ -49,7 +49,7 @@ public class ListingService(StayNGoDbContext db, ICurrentUserService currentUser
         var listing = await GetListingForCurrentUser(listingId);
 
         listing.UpdateDraftDetails(model.Title, model.Description,
-            model.Location, model.TimeZoneId,
+            model.Location, model.TimeZone,
             model.MainImageUrl, model.ImageUrls,
             model.Price?.ToDomain(), model.Capacity);
 

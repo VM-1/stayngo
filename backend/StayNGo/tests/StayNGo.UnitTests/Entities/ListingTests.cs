@@ -15,7 +15,7 @@ public class ListingTests
         public string? Title = "Loft";
         public string? Description = "desc";
         public string? Location = "Lisbon";
-        public string? TimeZoneId = "Europe/Lisbon";
+        public string? TimeZone = "Europe/Lisbon";
         public string? MainImageUrl = "https://img/m.jpg";
         public List<string> ImageUrls = ["https://img/m.jpg"];
         public Money? Price = new(12000, "EUR");
@@ -24,7 +24,7 @@ public class ListingTests
         public Listing Build(Guid? ownerId = null)
         {
             var l = Listing.StartDraft(ownerId ?? Guid.NewGuid());
-            l.UpdateDraftDetails(Title, Description, Location, TimeZoneId,
+            l.UpdateDraftDetails(Title, Description, Location, TimeZone,
                 MainImageUrl, ImageUrls, Price, Capacity);
             return l;
         }
@@ -170,7 +170,7 @@ public class ListingTests
         [new DraftSpec { Title = string.Empty }.Build(), nameof(Listing.Title)],
         [new DraftSpec { Description = string.Empty }.Build(), nameof(Listing.Description)],
         [new DraftSpec { MainImageUrl = string.Empty }.Build(), nameof(Listing.MainImageUrl)],
-        [new DraftSpec { TimeZoneId = string.Empty }.Build(), nameof(Listing.TimeZoneId)],
+        [new DraftSpec { TimeZone = string.Empty }.Build(), nameof(Listing.TimeZone)],
         [new DraftSpec { Location = string.Empty }.Build(), nameof(Listing.Location)],
         [new DraftSpec { Price = null }.Build(), nameof(Listing.Price)],
         [new DraftSpec { ImageUrls = [] }.Build(), nameof(Listing.ImageUrls)],

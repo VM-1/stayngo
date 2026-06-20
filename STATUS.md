@@ -2,30 +2,36 @@
 
 One-screen "where are we." Read at session start; update at session end. Link tickets/PRs/ADRs — don't restate them.
 
-_Updated: 2026-06-14 · branch: main_
+_Updated: 2026-06-20 · branch: `featue/32-listing`_
 
 ## Where we are
-Phase 1 → **Identity slice (Clerk) is complete end-to-end on `main`**: backend `/identity/me` + JIT provisioning + CORS, frontend Account page fetches it via TanStack Query. EPIC #2 (Identity) is essentially done.
+Phase 1. **Identity (EPIC #2) is done and merged** (ADR-0006: JIT provisioning). **Listings (EPIC #3) host lifecycle — #32, by-hand — is implemented and in review as PR #33.**
+
+#33 delivers the owner-facing listing lifecycle, owner-scoped:
+- Endpoints: create draft, edit-draft, edit-published (price/desc/photos only), publish, archive, list-mine (paginated) under `/host/listings`.
+- Domain: rich `Listing` with a guarded state machine (`Draft → Published → Archived`); publish gate names missing fields; `private set` throughout.
+- Value objects: `Money` (owned type), `IanaTimeZone` (value converter) — both kept out of the wire (DTOs use primitives).
+- Infra: `GlobalExceptionHandler` (`DomainException`→409, `RecordNotFoundException`→404), OpenAPI Bearer scheme for Scalar, fail-fast pending-migration check at startup.
+- Tests: **26 unit** (state machine + Money) + **8 integration** (Testcontainers Postgres: owner-scoping, publish gate, lifecycle, list-mine). All green.
 
 ## In progress
-- **PR #29** — docs: this `STATUS.md` + design/learning notes — open.
-- **Uncommitted backend domain WIP** — `Booking`/`Listing` entities + EF `ModelSnapshot` (early groundwork for Listings/Booking; left out of the Identity PRs on purpose).
+- **PR #33** open (`Closes #32`). Code review done — 2 findings: timezone-primitive (fixed, `IanaTimeZone` VO) and unused `GetAsync` (kept intentionally for future non-provisioning reads).
+- **Uncommitted on the branch:** renamed `Listing.TimeZoneId` → `TimeZone` (property + DTO + service + tests). **This renames the column `time_zone_id` → `time_zone`, so it needs a migration that isn't generated yet** — name it `RenameListingTimeZoneIdToTimeZone`, and verify `Up()` uses `RenameColumn` (not drop+add).
 
 ## Done (latest first)
-- 2026-06-14 — #28 merged: frontend profile via `GET /identity/me` (#19)
-- 2026-06-14 — #27 merged: backend CORS + Clerk authority (#26)
-- 2026-06-14 — #25 merged: restore strict tsconfig options (#24)
-- ~2026-06-12 — #23 merged: frontend Dockerfile → Node 24 (#22); `container-build` now runs on PRs
-- ~2026-06-12 — #21 merged: frontend shell + shadcn baseline (#20, EPIC #6); ADR-0004 (shadcn over MUI/antd)
-- earlier — #16 merged: backend Identity — Clerk JWT, `/identity/me`, JIT provisioning (EPIC #2)
+- 2026-06-20 — #33 opened: Listings host lifecycle (#32); code-reviewed; timezone VO added
+- ~2026-06-16 — Identity EPIC #2 closed; ADR-0006 (JIT provisioning) merged (#31)
+- 2026-06-14 — #28/#27/#25 merged: frontend `/identity/me`, backend CORS + Clerk authority, strict tsconfig
+- ~2026-06-12 — #23/#21 merged: Docker Node 24 + container-build on PRs; shadcn baseline; ADR-0004/0005
 
 ## Next
-1. Merge #29 (docs).
-2. Start the next Phase-1 epic — recommend **Listings (EPIC #3)** (foundation for Search #4 / Booking #5; the uncommitted `Booking`/`Listing` entities are early groundwork). Alt: sign-in/up polish (#18).
+1. Generate the `RenameListingTimeZoneIdToTimeZone` migration, commit, push, get CI green, **merge #33**.
+2. Then next #3 slice — public/guest listing browse (read side), or Search (EPIC #4) / Booking (EPIC #5, the GiST exclusion-constraint work is already stubbed in `BookingExclusionConstraintTests`).
 
 ## Cross-session gotchas (not obvious from code)
-- `dotnet user-secrets` are **per-Windows-account** — set the secret and run the app under the same account.
-- `dotnet ef` needs `ASPNETCORE_ENVIRONMENT=Development` to load the user-secret connection string (else it falls back to the appsettings `test` placeholder).
-- Tickets carry **by-hand** vs **by-claude** labels: by-hand = the user implements, Claude only advises.
-- The agent shell runs as Windows user `vm`; the user's IDE runs as another account — so their user-secrets stores differ.
-- appsettings still carries a `test/test` placeholder connection string + `StayNGO`/`StayNGo` casing mix — harmless, worth normalizing.
+- **Integration tests:** the test factory must apply migrations via a **standalone `DbContext` before touching `Services`** — accessing `Services` starts the host, which runs the fail-fast pending-migration check. (See `IntegrationTestFactory.InitializeAsync`.)
+- **Serilog + multiple test hosts:** `CreateBootstrapLogger()` freezes the global logger; a second `WebApplicationFactory` host re-freezes → "logger already frozen". Fixed via `preserveStaticLogger: true` in `Program.cs`. Don't revert that.
+- **EF value-object mapping lives in `DbContext.ConfigureConventions`:** single-column VOs (`DateRange`, `IanaTimeZone`) use `Properties<T>().HaveConversion<>()`; multi-column VOs (`Money`) use `ComplexProperties<T>()`. Add new VOs there, not per-entity.
+- `dotnet user-secrets` are **per-Windows-account**; `dotnet ef` needs `ASPNETCORE_ENVIRONMENT=Development` to load the secret connection string.
+- Tickets carry **by-hand** vs **by-claude** labels: by-hand = the user implements, Claude only advises/reviews. #32 is by-hand.
+- Agent shell runs as Windows user `vm`; the user's IDE runs as another account → different user-secrets stores.
