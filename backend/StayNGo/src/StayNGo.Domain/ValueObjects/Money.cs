@@ -5,10 +5,12 @@ public sealed record Money
     public long AmountCents { get; init; }
     public string Currency { get; init; } = null!;
 
-    // EF Core uses this via reflection. Do not call from application code.
-    private Money() { }
     
-    public Money(long amountCents, string currency )
+    private Money()// EF Core uses this via reflection. Do not call from application code.
+    {
+    }
+
+    public Money(long amountCents, string currency)
     {
         if (string.IsNullOrEmpty(currency))
         {
@@ -29,21 +31,21 @@ public sealed record Money
         Currency = currency.ToUpperInvariant();
     }
 
-    public static Money Zero(string currency) => new(0,currency);
+    public static Money Zero(string currency) => new(0, currency);
 
     public Money Add(Money other)
     {
         EnsureSameCurrency(other);
-        return new Money(AmountCents + other.AmountCents,Currency);
+        return new Money(AmountCents + other.AmountCents, Currency);
     }
 
     public Money Subtract(Money other)
     {
         EnsureSameCurrency(other);
-        return new Money(AmountCents - other.AmountCents,Currency);
+        return new Money(AmountCents - other.AmountCents, Currency);
     }
 
-    public Money Multiply(int factor) => new(AmountCents * factor,Currency);
+    public Money Multiply(int factor) => new(AmountCents * factor, Currency);
 
     public static Money operator +(Money left, Money right) => left.Add(right);
     public static Money operator -(Money left, Money right) => left.Subtract(right);

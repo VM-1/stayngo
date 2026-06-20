@@ -15,7 +15,7 @@ public class Listing : IEntity
     public List<string> ImageUrls { get; private set; } = [];
     public string? MainImageUrl { get; private set; }
     public string? Location { get; private set; }
-    public string? TimeZoneId { get; private set; }
+    public IanaTimeZone? TimeZoneId { get; private set; }
     public ListingStatus Status { get; private set; }
     public Money? Price { get; private set; }
     public int? Capacity { get; private set; }
@@ -52,7 +52,7 @@ public class Listing : IEntity
         Description = description;
         MainImageUrl = mainImageUrl;
         Location = location;
-        TimeZoneId = timeZoneId;
+        TimeZoneId = IanaTimeZone.From(timeZoneId);
         ImageUrls = imageUrls;
         Price = price;
         Capacity = capacity;
@@ -80,22 +80,15 @@ public class Listing : IEntity
 
         var missing = new List<string>();
 
-        if (string.IsNullOrWhiteSpace(Description))
-            missing.Add(nameof(Description));
-        if (string.IsNullOrWhiteSpace(Title))
-            missing.Add(nameof(Title));
-        if (string.IsNullOrWhiteSpace(Location))
-            missing.Add(nameof(Location));
-        if (string.IsNullOrWhiteSpace(TimeZoneId))
-            missing.Add(nameof(TimeZoneId));
-        if (Price is null)
-            missing.Add(nameof(Price));
-        if (!Capacity.HasValue)
-            missing.Add(nameof(Capacity));
-        if (ImageUrls.Count == 0)
-            missing.Add(nameof(ImageUrls));
-        if (string.IsNullOrWhiteSpace(MainImageUrl))
-            missing.Add(nameof(MainImageUrl));
+        if (string.IsNullOrWhiteSpace(Title)) missing.Add(nameof(Title));
+        if (string.IsNullOrWhiteSpace(Location)) missing.Add(nameof(Location));
+        if (string.IsNullOrWhiteSpace(Description)) missing.Add(nameof(Description));
+        if (string.IsNullOrWhiteSpace(MainImageUrl)) missing.Add(nameof(MainImageUrl));
+
+        if (Price is null) missing.Add(nameof(Price));
+        if (Capacity is null) missing.Add(nameof(Capacity));
+        if (TimeZoneId is null) missing.Add(nameof(TimeZoneId));
+        if (ImageUrls.Count == 0) missing.Add(nameof(ImageUrls));
 
         if (missing.Count > 0)
         {

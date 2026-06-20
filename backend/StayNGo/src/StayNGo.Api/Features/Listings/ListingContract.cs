@@ -33,7 +33,7 @@ public record ListingContract
             ImageUrls = listing.ImageUrls,
             MainImageUrl = listing.MainImageUrl,
             Location = listing.Location,
-            TimeZoneId = listing.TimeZoneId,
+            TimeZoneId = listing.TimeZoneId?.ToString(),
             Status = listing.Status,
             Price = MoneyContract.From(listing.Price),
             Capacity = listing.Capacity
