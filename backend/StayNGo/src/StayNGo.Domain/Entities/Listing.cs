@@ -94,7 +94,7 @@ public class Listing : IEntity
             missing.Add(nameof(Capacity));
         if (ImageUrls.Count == 0)
             missing.Add(nameof(ImageUrls));
-        if (MainImageUrl is null)
+        if (string.IsNullOrWhiteSpace(MainImageUrl))
             missing.Add(nameof(MainImageUrl));
 
         if (missing.Count > 0)

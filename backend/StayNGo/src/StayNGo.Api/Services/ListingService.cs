@@ -36,6 +36,7 @@ public class ListingService(StayNGoDbContext db, ICurrentUserService currentUser
         var query = db.Listings
             .AsNoTracking()
             .Where(x => x.OwnerUserId == user.Id)
+            .OrderBy(x => x.CreatedAt)
             .ApplyPagination(filter);
 
         var listings = await query.ToListAsync();

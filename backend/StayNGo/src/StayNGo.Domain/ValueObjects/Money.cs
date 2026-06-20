@@ -20,6 +20,11 @@ public sealed record Money
             throw new ArgumentException("Currency must be a 3-letter ISO 4217 code.", nameof(currency));
         }
 
+        if (amountCents < 0)
+        {
+            throw new ArgumentException("Amount cannot be negative.", nameof(amountCents));
+        }
+
         AmountCents = amountCents;
         Currency = currency.ToUpperInvariant();
     }

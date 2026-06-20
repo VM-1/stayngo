@@ -6,13 +6,14 @@ using StayNGo.Api.Services;
 using StayNGo.Infrastructure.Persistence;
 using StayNGo.Infrastructure.Services;
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .CreateBootstrapLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((ctx, cfg) => cfg.ReadFrom.Configuration(ctx.Configuration).WriteTo.Console());
+var serilogConfig = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("serilog.json", optional: false, reloadOnChange: true)
+    .Build();
+builder.Host.UseSerilog((_, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(serilogConfig));
 
 builder.Services.AddApi(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -30,6 +31,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapEndpoints();
+app.UseSerilogRequestLogging(); 
+
 
 if (app.Environment.IsDevelopment())
 {
