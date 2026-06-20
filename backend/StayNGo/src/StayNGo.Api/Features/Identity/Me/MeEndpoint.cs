@@ -15,6 +15,6 @@ public class MeEndpoints : IEndpoint
     {
         var user = await currentUserService.GetOrProvisionAsync();
 
-        return user is null ? Results.NotFound() : Results.Ok(new MeResponse(user.Id, user.Email, user.DisplayName));
+        return Results.Ok(new MeResponse(user.Id, user.Email, user.DisplayName));
     }
 }

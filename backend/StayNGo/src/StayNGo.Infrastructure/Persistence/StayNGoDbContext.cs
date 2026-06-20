@@ -43,5 +43,7 @@ public class StayNGoDbContext(DbContextOptions<StayNGoDbContext> options) : DbCo
             .HaveConversion<DateRangeConverter>();
 
         builder.ComplexProperties<Money>();
+        builder.Properties<IanaTimeZone>()
+            .HaveConversion<IanaTimeZoneConverter>();
     }
 }
