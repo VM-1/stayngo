@@ -126,7 +126,7 @@ public class ListingServiceTests(IntegrationTestFactory factory) : BaseIntegrati
         Title = "Sunlit loft",
         Description = "A bright loft in the old town.",
         Location = "Lisbon, Portugal",
-        TimeZoneId = "Europe/Lisbon",
+        TimeZone = "Europe/Lisbon",
         MainImageUrl = "https://img/main.jpg",
         ImageUrls = ["https://img/main.jpg"],
         Price = new MoneyContract(12000, "EUR"),

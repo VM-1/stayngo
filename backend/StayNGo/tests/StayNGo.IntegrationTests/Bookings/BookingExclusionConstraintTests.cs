@@ -64,7 +64,7 @@ public class BookingExclusionConstraintTests(IntegrationTestFactory factory) : B
     {
         var newListing = Listing.StartDraft(owner.Id);
         newListing.UpdateDraftDetails(title: "Test Listing", description: "For exclusion-constraint tests",
-            location: "Test Location", timeZoneId: "America/New_York",
+            location: "Test Location", timeZone: "America/New_York",
             price: new Money(1000, "USD"), capacity: 4,
             mainImageUrl: "https://placeholder.local/main.jpg", imageUrls: []);
 
