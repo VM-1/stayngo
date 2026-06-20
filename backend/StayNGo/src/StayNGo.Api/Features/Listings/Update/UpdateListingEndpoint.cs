@@ -6,7 +6,7 @@ public class UpdateListingEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        var groups = app.MapListingsGroup();
+        var groups = app.MapHostListingsGroup();
 
         groups.MapPut("draft/{id:guid}", UpdateDraftListing);
         groups.MapPatch("published/{id:guid}", UpdatePublishedListing);

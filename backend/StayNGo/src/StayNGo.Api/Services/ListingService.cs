@@ -1,17 +1,102 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StayNGo.Api.Exceptions;
 using StayNGo.Api.Extensions;
+using StayNGo.Api.Features.Common;
 using StayNGo.Api.Features.Listings;
+using StayNGo.Api.Features.Listings.Get;
 using StayNGo.Api.Features.Listings.ListMine;
 using StayNGo.Api.Features.Listings.Update;
 using StayNGo.Api.Services.Interfaces;
+using StayNGo.Api.Utils;
 using StayNGo.Domain.Entities;
+using StayNGo.Domain.Enums;
 using StayNGo.Infrastructure.Persistence;
 
 namespace StayNGo.Api.Services;
 
 public class ListingService(StayNGoDbContext db, ICurrentUserService currentUserService) : IListingService
 {
+    public async Task<ListingContract> GetListingAsync(Guid listingId)
+    {
+        var listing = await db.Listings
+            .Where(x => x.Status == ListingStatus.Published)
+            .Where(x => x.Id == listingId)
+            .SingleOrDefaultAsync();
+
+        if (listing is null)
+        {
+            throw new RecordNotFoundException(nameof(Listing), listingId);
+        }
+
+        return ListingContract.From(listing);
+    }
+
+    public async Task<PageResult<ListingContract>> GetListings(GetListingFilter filter)
+    {
+        var minPriceCents = MoneyConvertor.FromMajorUnits(filter.MinPrice);
+        var maxPriceCents = MoneyConvertor.FromMajorUnits(filter.MaxPrice);
+        var query = db.Listings
+            .Where(x => x.Status == ListingStatus.Published)
+            .OrderBy(x => x.CreatedAt)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(filter.Location))
+        {
+            query = query.Where(x => x.Location == filter.Location);
+        }
+
+        if (filter.MinCapacity.HasValue)
+        {
+            query = query.Where(x => x.Capacity >= filter.MinCapacity);
+        }
+
+
+        if (filter.MaxPrice.HasValue)
+        {
+            query = query.Where(x => x.Price!.AmountCents <= maxPriceCents);
+        }
+
+        if (filter.MinPrice.HasValue)
+        {
+            query = query.Where(x => x.Price!.AmountCents >= minPriceCents);
+        }
+
+        if (!string.IsNullOrWhiteSpace(filter.Currency))
+        {
+            query = query.Where(x => x.Price!.Currency == filter.Currency);
+        }
+
+
+        var totalCount = await query.CountAsync();
+        query = query.ApplyPagination(filter);
+        var listings = await query.ToListAsync();
+
+        var result =
+            new PageResult<ListingContract>(ListingContract.From(listings), filter.Page, filter.PageSize, totalCount);
+
+        return result;
+    }
+
+    public async Task<PageResult<ListingContract>> GetCurrentUserOwnListingsAsync(GetMyListingsFilter filter)
+    {
+        var user = await currentUserService.GetOrProvisionAsync();
+
+        var query = db.Listings
+            .AsNoTracking()
+            .Where(x => x.OwnerUserId == user.Id)
+            .OrderBy(x => x.CreatedAt)
+            .AsQueryable();
+
+        var totalCount = await query.CountAsync();
+        query = query.ApplyPagination(filter);
+        var listings = await query.ToListAsync();
+
+        var result =
+            new PageResult<ListingContract>(ListingContract.From(listings), filter.Page, filter.PageSize, totalCount);
+
+        return result;
+    }
+
     public async Task<ListingContract> CreateAsync(UpsertListingRequest model)
     {
         var user = await currentUserService.GetOrProvisionAsync();
@@ -27,21 +112,6 @@ public class ListingService(StayNGoDbContext db, ICurrentUserService currentUser
         await db.SaveChangesAsync();
 
         return ListingContract.From(listing);
-    }
-
-    public async Task<List<ListingContract>> GetCurrentUserOwnListingsAsync(GetMyListingsFilter filter)
-    {
-        var user = await currentUserService.GetOrProvisionAsync();
-
-        var query = db.Listings
-            .AsNoTracking()
-            .Where(x => x.OwnerUserId == user.Id)
-            .OrderBy(x => x.CreatedAt)
-            .ApplyPagination(filter);
-
-        var listings = await query.ToListAsync();
-
-        return ListingContract.From(listings);
     }
 
     public async Task<ListingContract> UpdateDraftListing(Guid listingId, UpsertListingRequest model)
@@ -74,7 +144,7 @@ public class ListingService(StayNGoDbContext db, ICurrentUserService currentUser
         var listing = await GetListingForCurrentUser(listingId);
         listing.Publish();
         await db.SaveChangesAsync();
-        
+
         return ListingContract.From(listing);
     }
 
@@ -83,7 +153,7 @@ public class ListingService(StayNGoDbContext db, ICurrentUserService currentUser
         var listing = await GetListingForCurrentUser(listingId);
         listing.Archive();
         await db.SaveChangesAsync();
-        
+
         return ListingContract.From(listing);
     }
 

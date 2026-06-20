@@ -6,7 +6,7 @@ public class GetMyListingsEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        var groups = app.MapListingsGroup();
+        var groups = app.MapHostListingsGroup();
 
         groups.MapGet("", GetMyListings);
     }

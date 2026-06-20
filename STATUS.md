@@ -2,31 +2,31 @@
 
 One-screen "where are we." Read at session start; update at session end. Link tickets/PRs/ADRs — don't restate them.
 
-_Updated: 2026-06-20 · branch: `featue/32-listing`_
+_Updated: 2026-06-20 · branch: `main`_
 
 ## Where we are
-Phase 1. **Identity (EPIC #2) is done and merged** (ADR-0006: JIT provisioning). **Listings (EPIC #3) host lifecycle — #32, by-hand — is implemented and in review as PR #33.**
+Phase 1. **Identity (EPIC #2)** and the **Listings host lifecycle (EPIC #3, #32)** are both **done and merged to `main`**.
 
-#33 delivers the owner-facing listing lifecycle, owner-scoped:
+The merged #32 work (owner-scoped, by-hand):
 - Endpoints: create draft, edit-draft, edit-published (price/desc/photos only), publish, archive, list-mine (paginated) under `/host/listings`.
 - Domain: rich `Listing` with a guarded state machine (`Draft → Published → Archived`); publish gate names missing fields; `private set` throughout.
-- Value objects: `Money` (owned type), `IanaTimeZone` (value converter) — both kept out of the wire (DTOs use primitives).
+- Value objects: `Money` (owned type), `IanaTimeZone` (value converter) — kept out of the wire (DTOs use primitives).
 - Infra: `GlobalExceptionHandler` (`DomainException`→409, `RecordNotFoundException`→404), OpenAPI Bearer scheme for Scalar, fail-fast pending-migration check at startup.
-- Tests: **26 unit** (state machine + Money) + **8 integration** (Testcontainers Postgres: owner-scoping, publish gate, lifecycle, list-mine). All green.
+- Tests: **26 unit** + **8 integration** (Testcontainers Postgres). All green.
 
 ## In progress
-- **PR #33** open (`Closes #32`). Code review done — 2 findings: timezone-primitive (fixed, `IanaTimeZone` VO) and unused `GetAsync` (kept intentionally for future non-provisioning reads).
-- **Uncommitted on the branch:** renamed `Listing.TimeZoneId` → `TimeZone` (property + DTO + service + tests). **This renames the column `time_zone_id` → `time_zone`, so it needs a migration that isn't generated yet** — name it `RenameListingTimeZoneIdToTimeZone`, and verify `Up()` uses `RenameColumn` (not drop+add).
+- _Nothing in flight._ Next #3 slice not started.
 
 ## Done (latest first)
-- 2026-06-20 — #33 opened: Listings host lifecycle (#32); code-reviewed; timezone VO added
+- 2026-06-20 — **#33 + #34 merged: Listings host lifecycle (#32 closed)** — full owner CRUD/state-machine, `IanaTimeZone` VO, exception handler, tests; `RenameListingTimeZoneIdToTimeZone` migration
 - ~2026-06-16 — Identity EPIC #2 closed; ADR-0006 (JIT provisioning) merged (#31)
 - 2026-06-14 — #28/#27/#25 merged: frontend `/identity/me`, backend CORS + Clerk authority, strict tsconfig
 - ~2026-06-12 — #23/#21 merged: Docker Node 24 + container-build on PRs; shadcn baseline; ADR-0004/0005
 
 ## Next
-1. Generate the `RenameListingTimeZoneIdToTimeZone` migration, commit, push, get CI green, **merge #33**.
-2. Then next #3 slice — public/guest listing browse (read side), or Search (EPIC #4) / Booking (EPIC #5, the GiST exclusion-constraint work is already stubbed in `BookingExclusionConstraintTests`).
+1. Next #3 slice — **public/guest listing browse (read side)**: list/detail of *published* listings, not owner-scoped. Natural follow-on to the host side just shipped.
+2. Or jump to Search (EPIC #4) / Booking (EPIC #5 — the GiST exclusion-constraint work is already stubbed in `BookingExclusionConstraintTests`).
+3. Known follow-ups carried from #33 (ticket if picking up): request validation (`RespectNullableAnnotations` / FluentValidation — `required` ≠ non-null), and idempotency on state-changing endpoints (deferred per #32).
 
 ## Cross-session gotchas (not obvious from code)
 - **Integration tests:** the test factory must apply migrations via a **standalone `DbContext` before touching `Services`** — accessing `Services` starts the host, which runs the fail-fast pending-migration check. (See `IntegrationTestFactory.InitializeAsync`.)
