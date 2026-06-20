@@ -2,8 +2,12 @@
 
 internal static class ListingRoutes
 {
-    public const string Base = "/host/listings";
 
-    public static RouteGroupBuilder MapListingsGroup(this IEndpointRouteBuilder endpoints) => endpoints.MapGroup(Base)
+    public static RouteGroupBuilder MapHostListingsGroup(this IEndpointRouteBuilder endpoints) => endpoints
+        .MapGroup("/host/listings")
         .WithTags("Listings (host)").RequireAuthorization();
+
+    public static RouteGroupBuilder MapListingGroup(this IEndpointRouteBuilder endpoints) => endpoints
+        .MapGroup("/listings")
+        .WithTags("Listings (browse)");
 }

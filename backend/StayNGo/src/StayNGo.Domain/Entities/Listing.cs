@@ -86,7 +86,7 @@ public class Listing : IEntity
         if (string.IsNullOrWhiteSpace(MainImageUrl)) missing.Add(nameof(MainImageUrl));
 
         if (Price is null) missing.Add(nameof(Price));
-        if (Capacity is null) missing.Add(nameof(Capacity));
+        if (!Capacity.HasValue) missing.Add(nameof(Capacity));
         if (TimeZone is null) missing.Add(nameof(TimeZone));
         if (ImageUrls.Count == 0) missing.Add(nameof(ImageUrls));
 

@@ -7,7 +7,7 @@ public class CreateListingEndpoint : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        var groups = app.MapListingsGroup();
+        var groups = app.MapHostListingsGroup();
 
         groups.MapPost("", CreateListing);
     }
