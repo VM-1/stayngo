@@ -18,7 +18,7 @@ public class StayNGoDbContext(DbContextOptions<StayNGoDbContext> options) : DbCo
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(StayNGoDbContext).Assembly);
     }
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var now = DateTime.UtcNow;
 
@@ -33,16 +33,14 @@ public class StayNGoDbContext(DbContextOptions<StayNGoDbContext> options) : DbCo
                 entry.Entity.UpdatedAt = now;
             }
         }
+
         return base.SaveChangesAsync(cancellationToken);
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
     {
-        builder.Properties<DateRange>()
-            .HaveColumnType("daterange")
-            .HaveConversion<DateRangeConverter>();
-
         builder.ComplexProperties<Money>();
+
         builder.Properties<IanaTimeZone>()
             .HaveConversion<IanaTimeZoneConverter>();
     }
