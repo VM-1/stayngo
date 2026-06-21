@@ -13,6 +13,7 @@ Thumbs.db
 bin/
 obj/
 *.log
+Logs/
 
 # Node / Vite
 node_modules/

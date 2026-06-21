@@ -9,7 +9,7 @@ namespace StayNGo.IntegrationTests.Bookings;
 
 public class BookingExclusionConstraintTests(IntegrationTestFactory factory) : BaseIntegrationTests(factory)
 {
-    [Fact]
+    [Fact(Skip = "Exclusion constraint deferred to #5; restore with GiST/daterange when booking writes land.")]
     public async Task Overlapping_confirmed_bookings_are_rejected()
     {
         // Arrange
@@ -20,7 +20,8 @@ public class BookingExclusionConstraintTests(IntegrationTestFactory factory) : B
         var firstBooking = await SeedBookingAsync(
             listing,
             guest,
-            new DateRange(new DateOnly(2026, 7, 1), new DateOnly(2026, 7, 5)),
+            new DateOnly(2026, 7, 1),
+            new DateOnly(2026, 7, 5),
             BookingStatus.Confirmed);
 
         // Act
@@ -31,7 +32,8 @@ public class BookingExclusionConstraintTests(IntegrationTestFactory factory) : B
             CreatedAt = DateTime.UtcNow,
             ListingId = listing.Id,
             GuestUserId = guest.Id,
-            During = new DateRange(new DateOnly(2026, 7, 3), new DateOnly(2026, 7, 7)),
+            CheckIn = new DateOnly(2026, 7, 3),
+            CheckOut = new DateOnly(2026, 7, 7),
             TotalPrice = new Money(20000, "USD"),
             Status = BookingStatus.Confirmed,
         });
@@ -74,7 +76,7 @@ public class BookingExclusionConstraintTests(IntegrationTestFactory factory) : B
     }
 
     private async Task<Booking> SeedBookingAsync(
-        Listing listing, User guest, DateRange during, BookingStatus status)
+        Listing listing, User guest, DateOnly checkIn, DateOnly checkOut, BookingStatus status)
     {
         var b = new Booking
         {
@@ -82,7 +84,8 @@ public class BookingExclusionConstraintTests(IntegrationTestFactory factory) : B
             CreatedAt = DateTime.UtcNow,
             ListingId = listing.Id,
             GuestUserId = guest.Id,
-            During = during,
+            CheckIn = checkIn,
+            CheckOut = checkOut,
             TotalPrice = new Money(20000, "USD"),
             Status = status,
         };

@@ -9,4 +9,6 @@ public class GetListingFilter : PaginationFilter
     public decimal? MinPrice { get; set; }
     public decimal? MaxPrice { get; set; }
     public string? Currency { get; set; }
+    public DateOnly? CheckIn { get; set; }
+    public DateOnly? CheckOut { get; set; }
 }

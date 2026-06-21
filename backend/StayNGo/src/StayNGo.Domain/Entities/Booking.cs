@@ -10,7 +10,8 @@ public class Booking : IEntity
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     
-    public DateRange During { get; set; }
+    public DateOnly CheckIn { get; set; }
+    public DateOnly CheckOut { get; set; }
     public Money TotalPrice { get; set; } = null!;
     public BookingStatus Status { get; set; }
     public Guid GuestUserId { get; set; }

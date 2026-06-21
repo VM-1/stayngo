@@ -35,10 +35,17 @@ public class ListingService(StayNGoDbContext db, ICurrentUserService currentUser
     {
         var minPriceCents = MoneyConvertor.FromMajorUnits(filter.MinPrice);
         var maxPriceCents = MoneyConvertor.FromMajorUnits(filter.MaxPrice);
-        var query = db.Listings
-            .Where(x => x.Status == ListingStatus.Published)
-            .OrderBy(x => x.CreatedAt)
-            .AsQueryable();
+
+        IQueryable<Listing> query = db.Listings;
+
+        if (filter is { CheckIn: not null, CheckOut: not null })
+        {
+            query = query.Where(x => !x.Bookings.Any(b => b.Status == BookingStatus.Confirmed &&
+                                                          b.CheckIn < filter.CheckOut.Value &&
+                                                          filter.CheckIn.Value < b.CheckOut));
+        }
+
+        query = query.Where(x => x.Status == ListingStatus.Published);
 
         if (!string.IsNullOrWhiteSpace(filter.Location))
         {
@@ -49,7 +56,6 @@ public class ListingService(StayNGoDbContext db, ICurrentUserService currentUser
         {
             query = query.Where(x => x.Capacity >= filter.MinCapacity);
         }
-
 
         if (filter.MaxPrice.HasValue)
         {
@@ -66,15 +72,11 @@ public class ListingService(StayNGoDbContext db, ICurrentUserService currentUser
             query = query.Where(x => x.Price!.Currency == filter.Currency);
         }
 
-
         var totalCount = await query.CountAsync();
-        query = query.ApplyPagination(filter);
-        var listings = await query.ToListAsync();
+        var listings = await query.OrderBy(x => x.CreatedAt).ApplyPagination(filter).ToListAsync();
 
-        var result =
-            new PageResult<ListingContract>(ListingContract.From(listings), filter.Page, filter.PageSize, totalCount);
-
-        return result;
+        return new PageResult<ListingContract>(
+            ListingContract.From(listings), filter.Page, filter.PageSize, totalCount);
     }
 
     public async Task<PageResult<ListingContract>> GetCurrentUserOwnListingsAsync(GetMyListingsFilter filter)
