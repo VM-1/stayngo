@@ -43,7 +43,7 @@
 - Never add MediatR (commercial). Use plain handlers or source-gen Mediator.
 - Every architectural choice a future reader would wonder about → ADR.
 - When drafting a ticket that touches a new concept/pattern/DB feature, fill the **Learning objective** field and **Learning references** field in the template (Principle 11). Code tickets that teach a concept gain an acceptance bullet "write `docs/db-notes/NNN-<topic>.md` in own words (~300 words)".
-- Tickets describe **business + requirements only — no code**. Architecture/infrastructure changes are **`[internal]`** tickets that state the value ("what this gives us") and are need-driven — see **Ticket content** below.
+- Tickets describe **business + requirements only — written from a PM / Product-Owner perspective**: WHAT the user gets and observable outcomes, **never the how**. No code, no API routes/paths, no data structures, no storage/DB mechanisms, no library/tech names. The implementer (and the design spec) owns the *how*. Architecture/infrastructure changes are **`[internal]`** tickets that state the value ("what this gives us") and are need-driven — see **Ticket content** below.
 
 ## Learning-reference rule (Principle 11)
 When introducing a concept/pattern/technique the user didn't name:
@@ -66,7 +66,11 @@ When introducing a concept/pattern/technique the user didn't name:
 - If a `by-hand` ticket requests implementation from Claude Code, refuse and ask user to re-label.
 
 ## Ticket content (business vs `[internal]`)
-- **Feature tickets describe the business part only** — WHAT the user gets + acceptance criteria, in business terms. **No code, no file-by-file implementation detail.** The implementer owns the *how* (for `by-hand`, that's the user — the learning lives there).
+- **Feature tickets describe the business part only** — written as a Product Owner would: a user story (*As a … I want … so that …*) plus acceptance criteria phrased as **observable outcomes** (prefer Given/When/Then). **No code, no file-by-file detail, and no technical mechanisms** — no API paths, request/response shapes, headers, table/column designs, indexes, or named tech (Postgres, GiST, EF, idempotency-key, etc.). Describe the *outcome*, not the *solution*:
+  - ✅ "Two guests cannot both hold a confirmed booking for overlapping dates on the same listing." ❌ "Add a GiST exclusion constraint on `during`."
+  - ✅ "If a guest accidentally submits the same booking twice, only one booking is created." ❌ "Idempotency-Key header + `idempotency_keys` table with 24h TTL."
+  - ✅ "The total price is fixed at the time of booking and doesn't change afterward." ❌ "Compute `nights × price_cents` and store `total_price_amount_cents`."
+  The *how* lives in the design spec (`docs/superpowers/specs/`) and implementation plan. The implementer owns it (for `by-hand`, that's the user — the learning lives there).
 - **Architecture / infrastructure changes are `[internal]` tickets** (label `internal`). State **the value — "what this gives us"** — not just the action, and keep them **need-driven**: a real, observed problem spawns the ticket. Examples: `/me` slow → `[internal]` "add Redis caching"; JIT-provisioned profile goes stale → `[internal]` "add profile-sync webhook"; outgrow a vendor → `[internal]` "replace Clerk with <X>".
 - An `[internal]` change a future reader would question still earns an ADR (see Hard rules).
 
