@@ -65,6 +65,7 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IListingService, ListingService>();
+        services.AddScoped<IBookingService, BookingService>();
 
         return services;
     }

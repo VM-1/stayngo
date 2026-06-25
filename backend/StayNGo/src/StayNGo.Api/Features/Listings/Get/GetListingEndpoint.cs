@@ -12,10 +12,10 @@ public class GetListingEndpoint : IEndpoint
         groups.MapGet("{id:guid}", GetListingById);
     }
 
-    private static async Task<IResult> GetListings(IListingService listingService,
+    private static async Task<IResult> GetListings(IListingService service,
         [AsParameters] GetListingFilter filter)
     {
-        return Results.Ok(await listingService.GetListings(filter));
+        return Results.Ok(await service.GetListings(filter));
     }
 
     private static async Task<IResult> GetListingById(IListingService listingService, Guid id)

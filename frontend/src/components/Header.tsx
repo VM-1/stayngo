@@ -49,7 +49,7 @@ export const Header = () => {
                 tone="muted"
                 className="hidden hover:text-foreground sm:inline"
               >
-                <NavLink to="/my/bookings">My bookings</NavLink>
+                <NavLink to="/trips">Trips</NavLink>
               </Text>
               <UserButton />
             </div>

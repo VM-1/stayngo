@@ -47,21 +47,26 @@ export type HostListing = {
 };
 
 export const hostListings: HostListing[] = [
-  { id: "1", title: "Sunlit loft in the old town", meta: "$120 night · 12 bookings", status: "Active" },
-  { id: "3", title: "Riverside one-bed with view", meta: "$145 night · 4 bookings", status: "Active" },
+  { id: "1", title: "Sunlit loft in the old town", meta: "$120 night · 12 reservations", status: "Active" },
+  { id: "3", title: "Riverside one-bed with view", meta: "$145 night · 4 reservations", status: "Active" },
   { id: "9", title: "Garden studio (unpublished)", meta: "Not yet priced", status: "Draft" },
   { id: "10", title: "Old downtown room", meta: "Archived", status: "Archived" },
 ];
 
-export type BookingRequest = {
+// Host-side: reservations on the host's listings (newest first). Pending ones are actionable.
+export type HostReservation = {
   id: string;
   guest: string;
   initials: string;
   detail: string;
+  status: BookingStatus;
 };
 
-export const bookingRequests: BookingRequest[] = [
-  { id: "1", guest: "Alex Rivera", initials: "AR", detail: "Sunlit loft · Jun 20 – 24 · 2 guests · $480" },
-  { id: "2", guest: "Priya Nair", initials: "PN", detail: "Riverside one-bed · Jul 1 – 3 · 1 guest · $290" },
-  { id: "3", guest: "Tom Becker", initials: "TB", detail: "Sunlit loft · Aug 12 – 18 · 3 guests · $720" },
+export const hostReservations: HostReservation[] = [
+  { id: "1", guest: "Alex Rivera", initials: "AR", detail: "Sunlit loft · Jun 20 – 24 · 2 guests · $480", status: "Pending" },
+  { id: "2", guest: "Priya Nair", initials: "PN", detail: "Riverside one-bed · Jul 1 – 3 · 1 guest · $290", status: "Pending" },
+  { id: "3", guest: "Liam Moore", initials: "LM", detail: "Sunlit loft · Aug 20 – 24 · 2 guests", status: "Confirmed" },
+  { id: "4", guest: "Tom Becker", initials: "TB", detail: "Sunlit loft · Mar 12 – 15 · 3 guests", status: "Completed" },
+  { id: "5", guest: "Jana Silva", initials: "JS", detail: "Riverside one-bed · Feb 2 – 5 · 1 guest", status: "Completed" },
+  { id: "6", guest: "Elena Kovač", initials: "EK", detail: "Designer flat · Jan 4 – 6 · 2 guests", status: "Cancelled" },
 ];

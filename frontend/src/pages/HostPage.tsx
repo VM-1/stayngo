@@ -10,8 +10,8 @@ export default function HostPage() {
         Host dashboard
       </Text>
       <Text variant="body" tone="muted" className="max-w-md">
-        Your hosting tools are coming soon — list a place and manage bookings right
-        here.
+        Your hosting tools are coming soon — list a place and manage reservations
+        right here.
       </Text>
       <Button size="lg" disabled>
         Create a listing

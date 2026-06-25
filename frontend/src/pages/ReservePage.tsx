@@ -10,14 +10,14 @@ export default function ReservePage() {
     <Container className="py-12">
       <div className="mx-auto flex max-w-xl flex-col gap-5">
         <Text variant="h2" as="h1">
-          Confirm and book
+          Confirm reservation
         </Text>
 
         <div className="flex items-start gap-3 rounded-lg border border-destructive bg-destructive/10 p-4">
           <AlertTriangle className="size-5 text-destructive shrink-0" />
           <div className="flex flex-col">
             <Text variant="label" className="text-destructive">
-              Those dates were just booked
+              Those dates were just reserved
             </Text>
             <Text variant="small" className="text-destructive/90">
               Someone confirmed an overlapping stay. Pick different dates to continue.
@@ -79,7 +79,7 @@ export default function ReservePage() {
         </Text>
 
         <Button size="lg" className="w-full" asChild>
-          <Link to="/booking-confirmed">Confirm booking</Link>
+          <Link to="/booking-confirmed">Confirm reservation</Link>
         </Button>
       </div>
     </Container>
