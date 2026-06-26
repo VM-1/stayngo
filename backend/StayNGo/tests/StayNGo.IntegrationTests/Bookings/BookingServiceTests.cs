@@ -29,7 +29,7 @@ public class BookingServiceTests(IntegrationTestFactory factory) : BaseIntegrati
         var host = await SeedUserAsync($"host-{Guid.NewGuid():N}@it.test", "host");
         var listing = await SeedPublishedListingAsync(host); // nightly = 10000
 
-        var result = await Service.CreateAsync(new CreateBookingRequest(listing.Id, Jul1, Jul5, Guid.NewGuid()));
+        var result = await Service.CreateAsync(new CreateBookingRequest(listing.Id, Jul1, Jul5), Guid.NewGuid());
 
         result.Status.Should().Be(BookingStatus.Pending);
         result.TotalPrice.AmountCents.Should().Be(10000 * 4); // 4 nights
@@ -40,7 +40,7 @@ public class BookingServiceTests(IntegrationTestFactory factory) : BaseIntegrati
     {
         var listing = await SeedPublishedListingAsync(Factory.PrimaryUser); // current user owns it
 
-        var act = () => Service.CreateAsync(new CreateBookingRequest(listing.Id, Jul1, Jul5, Guid.NewGuid()));
+        var act = () => Service.CreateAsync(new CreateBookingRequest(listing.Id, Jul1, Jul5), Guid.NewGuid());
 
         await act.Should().ThrowAsync<RecordNotFoundException>();
     }
@@ -52,8 +52,8 @@ public class BookingServiceTests(IntegrationTestFactory factory) : BaseIntegrati
         var listing = await SeedPublishedListingAsync(host);
         var key = Guid.NewGuid();
 
-        var first = await Service.CreateAsync(new CreateBookingRequest(listing.Id, Jul1, Jul5, key));
-        var second = await Service.CreateAsync(new CreateBookingRequest(listing.Id, Jul1, Jul5, key));
+        var first = await Service.CreateAsync(new CreateBookingRequest(listing.Id, Jul1, Jul5), key);
+        var second = await Service.CreateAsync(new CreateBookingRequest(listing.Id, Jul1, Jul5), key);
 
         second.Id.Should().Be(first.Id);
         (await DbContext.Bookings.CountAsync(x => x.IdempotencyKey == key)).Should().Be(1);
@@ -124,7 +124,7 @@ public class BookingServiceTests(IntegrationTestFactory factory) : BaseIntegrati
         var host = await SeedUserAsync($"host-{Guid.NewGuid():N}@it.test", "host");
         var listing = await SeedPublishedListingAsync(host);
 
-        var mine = await Service.CreateAsync(new CreateBookingRequest(listing.Id, Jul1, Jul5, Guid.NewGuid()));
+        var mine = await Service.CreateAsync(new CreateBookingRequest(listing.Id, Jul1, Jul5), Guid.NewGuid());
         var otherGuest = await SeedUserAsync($"guest-{Guid.NewGuid():N}@it.test", "other");
         await SeedBookingAsync(listing, otherGuest, Aug1, Aug5, BookingStatus.Pending);
 

@@ -55,7 +55,7 @@ public class BookingService(StayNGoDbContext db, ICurrentUserService currentUser
         return new PageResult<ReservationContract>(ReservationContract.FromDomain(bookings), filter, totalCount);
     }
 
-    public async Task<BookingContract> CreateAsync(CreateBookingRequest request)
+    public async Task<BookingContract> CreateAsync(CreateBookingRequest request, Guid idempotencyKey)
     {
         var user = await currentUserService.GetAsync();
         var listing = await db.Listings.FirstOrDefaultAsync(x => x.Id == request.ListingId &&
@@ -67,7 +67,7 @@ public class BookingService(StayNGoDbContext db, ICurrentUserService currentUser
             throw new RecordNotFoundException(nameof(listing), request.ListingId);
         }
 
-        var booking = Booking.CreateBooking(user.Id, request.CheckIn, request.CheckOut, listing, request.IdempotencyKey);
+        var booking = Booking.CreateBooking(user.Id, request.CheckIn, request.CheckOut, listing, idempotencyKey);
 
         db.Bookings.Add(booking);
 
@@ -80,7 +80,7 @@ public class BookingService(StayNGoDbContext db, ICurrentUserService currentUser
             // Same (guest, idempotency key) already created a booking — replay it instead of creating a duplicate.
             db.ChangeTracker.Clear();
             var existing = await db.Bookings.SingleAsync(
-                x => x.GuestUserId == user.Id && x.IdempotencyKey == request.IdempotencyKey);
+                x => x.GuestUserId == user.Id && x.IdempotencyKey == idempotencyKey);
             return BookingContract.FromDomain(existing);
         }
 
