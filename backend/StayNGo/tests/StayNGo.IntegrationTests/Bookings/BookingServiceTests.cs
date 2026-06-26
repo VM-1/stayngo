@@ -152,6 +152,37 @@ public class BookingServiceTests(IntegrationTestFactory factory) : BaseIntegrati
         result.Items.First().Id.Should().Be(pending.Id);
     }
 
+    // ---- Cancel ----
+
+    [Fact]
+    public async Task CancelTrip_OwnBookingBeforeCutoff_Cancels()
+    {
+        var host = await SeedUserAsync($"host-{Guid.NewGuid():N}@it.test", "host");
+        var listing = await SeedPublishedListingAsync(host);
+        // Far-future check-in → well before the 24h cutoff for the real "now" the service uses.
+        var future = DateOnly.FromDateTime(DateTime.UtcNow).AddYears(1);
+        var booking = await Service.CreateAsync(
+            new CreateBookingRequest(listing.Id, future, future.AddDays(2)), Guid.NewGuid());
+
+        var result = await Service.CancelTrip(booking.Id);
+
+        result.Status.Should().Be(BookingStatus.Cancelled);
+    }
+
+    [Fact]
+    public async Task CancelTrip_ForeignBooking_ThrowsNotFound()
+    {
+        var host = await SeedUserAsync($"host-{Guid.NewGuid():N}@it.test", "host");
+        var otherGuest = await SeedUserAsync($"guest-{Guid.NewGuid():N}@it.test", "other");
+        var listing = await SeedPublishedListingAsync(host);
+        var future = DateOnly.FromDateTime(DateTime.UtcNow).AddYears(1);
+        var foreign = await SeedBookingAsync(listing, otherGuest, future, future.AddDays(2), BookingStatus.Pending);
+
+        var act = () => Service.CancelTrip(foreign.Id); // current user is not the guest
+
+        await act.Should().ThrowAsync<RecordNotFoundException>();
+    }
+
     private async Task ClearBookingsAsync()
     {
         DbContext.Bookings.RemoveRange(DbContext.Bookings);

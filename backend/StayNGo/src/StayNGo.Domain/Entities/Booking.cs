@@ -21,6 +21,12 @@ public class Booking : IEntity
     public Guid ListingId { get; private set; }
     public Listing Listing { get; private set; } = null!;
 
+
+    private static readonly TimeOnly CheckInTime = new(15, 0); // 15:00
+
+    private DateTime CancellationCutoff => CheckIn.AddDays(-1).ToDateTime(CheckInTime);
+
+
     private Booking() //EF
     {
     }
@@ -53,12 +59,20 @@ public class Booking : IEntity
         };
     }
 
-    public void Cancel()
+    public void Cancel(DateTimeOffset now, IanaTimeZone listingTimeZone)
     {
-        if (Status != BookingStatus.Pending)
+        if (Status is not (BookingStatus.Pending or BookingStatus.Confirmed))
         {
             throw new DomainException("Booking cannot be cancelled.");
         }
+
+        var timeZone = listingTimeZone.ToTimeZoneInfo();
+        var nowInListingTimeZone = TimeZoneInfo.ConvertTimeFromUtc(now.UtcDateTime, timeZone);
+        if (nowInListingTimeZone >= CancellationCutoff)
+        {
+            throw new DomainException("Cancellation is closed within 24 hours of check-in.");
+        }
+
 
         Status = BookingStatus.Cancelled;
     }

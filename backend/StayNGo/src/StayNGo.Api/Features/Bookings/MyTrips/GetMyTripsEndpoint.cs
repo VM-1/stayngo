@@ -10,10 +10,16 @@ public class GetMyTripsEndpoint : IEndpoint
         var groups = app.MapMyTripsGroup();
 
         groups.MapGet("", GetMyTrips);
+        groups.MapPut("{id:guid}/cancel", CancelTrip);
     }
 
     private static async Task<IResult> GetMyTrips(IBookingService service, [AsParameters] GetBookingFilter filter)
     {
         return Results.Ok(await service.GetMyTrips(filter));
     }
+    private static async Task<IResult> CancelTrip(IBookingService service, Guid id)
+    {
+        return Results.Ok(await service.CancelTrip(id));
+    }
+    
 }
