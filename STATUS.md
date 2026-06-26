@@ -2,10 +2,12 @@
 
 One-screen "where are we." Read at session start; update at session end. Link tickets/PRs/ADRs — don't restate them.
 
-_Updated: 2026-06-21 · branch: `main`_
+_Updated: 2026-06-26 · branch: `main`_
 
 ## Where we are
-Phase 1. **Identity (#2)**, **Listings (#3)**, **Search (#4)** done. **EPIC #5 Booking** is mostly built: request + host confirm/reject + guest "trips" / host "reservations" reads merged (#40), idempotency hardened to a required header (#41). The no-double-booking GiST exclusion constraint is **restored** here (ADR-0007). Remaining booking slice: **guest cancellation**.
+Phase 1. **Backend is feature-complete** — Identity (#2), Listings (#3), Search (#4), and **Booking (#5, now closed)** all shipped. Booking covers request → host confirm/reject → guest cancel (24h cut-off in listing tz) + guest "trips" / host "reservations" reads; no-double-booking GiST constraint (ADR-0007), required `Idempotency-Key` header.
+
+**Remaining for the Phase-1 base:** wire the frontend (EPIC #6) to the live API, then deploy (#8) + observability basics (#7). Done-bar (StayNGo.md §"Done ="): a stranger registers → publishes a listing → books someone else's, on the live URL.
 
 The merged #32 work (owner-scoped, by-hand):
 - Endpoints: create draft, edit-draft, edit-published (price/desc/photos only), publish, archive, list-mine (paginated) under `/host/listings`.
@@ -18,6 +20,7 @@ The merged #32 work (owner-scoped, by-hand):
 - _Nothing in flight._
 
 ## Done (latest first)
+- 2026-06-26 — **#43 merged: guest cancellation (#42 closed, EPIC #5 closed)** — `PUT /me/trips/{id}/cancel`; `Booking.Cancel(now, tz)` allowed Pending/Confirmed, rejected within 24h of check-in anchored to 15:00 in the listing's IANA timezone (`now` injected → unit-testable); cancelling a confirmed stay frees the dates. +6 entity unit + 2 integration tests
 - 2026-06-26 — **#41 merged: idempotency key → required `Idempotency-Key` header** (#40 review follow-up) — empty/missing key → 400 before insert; replay keys off the header value
 - 2026-06-25 — **#40 merged: Booking request + host confirm/reject (#39 closed, EPIC #5 slices 1+2)** — `POST /bookings` (Pending, price fixed = nights×nightly), `POST /reservations/{id}/confirm|reject` (owner-scoped guarded state machine), `GET /me/trips` + `GET /reservations` (pending-first, paginated). **GiST exclusion constraint restored** (generated `during` daterange, `EXCLUDE … WHERE status=Confirmed`) per ADR-0007 → `23P01`→`DomainException`→409. Per-user idempotency unique index + replay. Frontend Trips/Reservations wired. +tests (30 integration)
 - 2026-06-21 — **#38 merged: availability date-range search (#37 closed)** — `GET /listings?checkIn&checkOut` excludes listings with an overlapping confirmed booking; **pivoted away from `daterange`+GiST** to two `DateOnly` columns (`check_in`/`check_out`) + composite b-tree + pure-LINQ half-open overlap. `DateRange` VO/converter removed; migration `ReplaceBookingDuringWithCheckInCheckOut`. **ADR-0007**. No-double-booking DB invariant **deferred to #5** (mandatory there); exclusion test skipped with that pointer. +3 integration tests (19 total)
@@ -28,10 +31,10 @@ The merged #32 work (owner-scoped, by-hand):
 - ~2026-06-12 — #23/#21 merged: Docker Node 24 + container-build on PRs; shadcn baseline; ADR-0004/0005
 
 ## Next
-1. **Finish Booking (#5): guest cancellation** — the last write slice. Guest cancels their own booking before check-in (24h rule in the listing's timezone, per spec §5.3). `Booking.Cancel()` already exists; needs endpoint + service + the 24h/timezone rule + tests. Then #5 can close.
-2. **db-notes owed from #39** (by-hand learning deliverable): `docs/db-notes/` on the GiST exclusion constraint and on idempotent requests (~300 words each, own words).
-3. Then **frontend** (EPIC #6 Frontend Shell) — wire remaining mock pages (SearchPage date filters, ListingDetailPage) to live endpoints; then Observability (#7), Deploy (#8).
-4. Carried follow-ups (ticket if picking up): request validation (FluentValidation — `required` ≠ non-null), single-currency `Currency` filter (#35) pending a multi-currency decision.
+1. **Frontend wiring (EPIC #6)** — backend is done, so this is the main remaining base work. Pages still on `lib/mock.ts`: `SearchPage` (browse + filters + dates), `ListingDetailPage`, `TripsPage`, `HostReservationsPage`, `HostListingsPage`; plus write flows `ReservePage` (POST /bookings + Idempotency-Key header) and `CreateListingPage`. Scaffolding exists (Clerk auth, `lib/api.ts` fetch wrapper, react-query, shadcn); `AccountPage` is the wired exemplar. Per-page: endpoint hooks + swap mock + loading/error/empty states.
+2. **Deploy (#8)** + **Observability basics (#7)** — Fly.io app + managed Postgres + secrets + migrations-on-boot + serve FE + prod Clerk keys. Then run the done-bar smoke on the live URL.
+3. **db-notes owed (by-hand learning)**: `docs/db-notes/` on the GiST exclusion constraint, idempotent requests (#39), and a short note on anchoring a deadline to a place's local time (#42).
+4. Carried follow-ups (ticket if picking up): request validation (FluentValidation — `required` ≠ non-null); single-currency `Currency` filter (#35) pending a multi-currency decision.
 
 ## Cross-session gotchas (not obvious from code)
 - **Integration tests:** the test factory must apply migrations via a **standalone `DbContext` before touching `Services`** — accessing `Services` starts the host, which runs the fail-fast pending-migration check. (See `IntegrationTestFactory.InitializeAsync`.)
