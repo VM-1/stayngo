@@ -1,96 +1,43 @@
-﻿using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using StayNGo.Domain.Entities;
+using FluentAssertions;
 using StayNGo.Domain.Enums;
-using StayNGo.Domain.ValueObjects;
+using StayNGo.Domain.Exceptions;
 
 namespace StayNGo.IntegrationTests.Bookings;
 
 public class BookingExclusionConstraintTests(IntegrationTestFactory factory) : BaseIntegrationTests(factory)
 {
-    [Fact(Skip = "Exclusion constraint deferred to #5; restore with GiST/daterange when booking writes land.")]
+    [Fact]
     public async Task Overlapping_confirmed_bookings_are_rejected()
     {
-        // Arrange
-        var host = await SeedUserAsync("test@stayngo.com", "test name");
-        var guest = await SeedUserAsync("testguest@stayngo.com", "test guest name");
-        var listing = await SeedListingAsync(host);
+        var host = await SeedUserAsync($"host-{Guid.NewGuid():N}@stayngo.com", "host");
+        var guest = await SeedUserAsync($"guest-{Guid.NewGuid():N}@stayngo.com", "guest");
+        var listing = await SeedPublishedListingAsync(host);
 
-        var firstBooking = await SeedBookingAsync(
-            listing,
-            guest,
-            new DateOnly(2026, 7, 1),
-            new DateOnly(2026, 7, 5),
-            BookingStatus.Confirmed);
+        await SeedBookingAsync(listing, guest,
+            new DateOnly(2026, 7, 1), new DateOnly(2026, 7, 5), BookingStatus.Confirmed);
 
-        // Act
-        // Add Second Booking that has overlaps
-        DbContext.Bookings.Add(new Booking
-        {
-            Id = Guid.NewGuid(),
-            CreatedAt = DateTime.UtcNow,
-            ListingId = listing.Id,
-            GuestUserId = guest.Id,
-            CheckIn = new DateOnly(2026, 7, 3),
-            CheckOut = new DateOnly(2026, 7, 7),
-            TotalPrice = new Money(20000, "USD"),
-            Status = BookingStatus.Confirmed,
-        });
+        // A second confirmed booking that overlaps the first → GiST exclusion constraint (23P01),
+        // surfaced as a DomainException by the DbContext's SaveChanges handler.
+        var act = async () => await SeedBookingAsync(listing, guest,
+            new DateOnly(2026, 7, 3), new DateOnly(2026, 7, 7), BookingStatus.Confirmed);
 
-        var act = async () => await DbContext.SaveChangesAsync();
-
-        // Assert - Postgres raised 23P01 (exclusion_violation)
-        var ex = await act.Should().ThrowExactlyAsync<DbUpdateException>();
-        ex.WithInnerException<PostgresException>().Which.SqlState.Should().Be("23P01");
+        await act.Should().ThrowAsync<DomainException>();
     }
 
-
-    // Helpers 
-    private async Task<User> SeedUserAsync(string email, string displayName)
+    [Fact]
+    public async Task Back_to_back_confirmed_bookings_are_allowed()
     {
-        var newUser = new User
-        {
-            Id = Guid.NewGuid(),
-            Email = email,
-            DisplayName = displayName,
-            ClerkId = Guid.NewGuid().ToString(),
-        };
+        var host = await SeedUserAsync($"host-{Guid.NewGuid():N}@stayngo.com", "host");
+        var guest = await SeedUserAsync($"guest-{Guid.NewGuid():N}@stayngo.com", "guest");
+        var listing = await SeedPublishedListingAsync(host);
 
-        DbContext.Users.Add(newUser);
-        await DbContext.SaveChangesAsync();
-        return newUser;
-    }
+        await SeedBookingAsync(listing, guest,
+            new DateOnly(2026, 7, 1), new DateOnly(2026, 7, 5), BookingStatus.Confirmed);
 
-    private async Task<Listing> SeedListingAsync(User owner)
-    {
-        var newListing = Listing.StartDraft(owner.Id);
-        newListing.UpdateDraftDetails(title: "Test Listing", description: "For exclusion-constraint tests",
-            location: "Test Location", timeZone: "America/New_York",
-            price: new Money(1000, "USD"), capacity: 4,
-            mainImageUrl: "https://placeholder.local/main.jpg", imageUrls: []);
+        // Check-out day == next check-in day: half-open ranges do not overlap.
+        var act = async () => await SeedBookingAsync(listing, guest,
+            new DateOnly(2026, 7, 5), new DateOnly(2026, 7, 8), BookingStatus.Confirmed);
 
-        DbContext.Listings.Add(newListing);
-        await DbContext.SaveChangesAsync();
-        return newListing;
-    }
-
-    private async Task<Booking> SeedBookingAsync(
-        Listing listing, User guest, DateOnly checkIn, DateOnly checkOut, BookingStatus status)
-    {
-        var b = new Booking
-        {
-            Id = Guid.NewGuid(),
-            CreatedAt = DateTime.UtcNow,
-            ListingId = listing.Id,
-            GuestUserId = guest.Id,
-            CheckIn = checkIn,
-            CheckOut = checkOut,
-            TotalPrice = new Money(20000, "USD"),
-            Status = status,
-        };
-        DbContext.Bookings.Add(b);
-        await DbContext.SaveChangesAsync();
-        return b;
+        await act.Should().NotThrowAsync();
     }
 }

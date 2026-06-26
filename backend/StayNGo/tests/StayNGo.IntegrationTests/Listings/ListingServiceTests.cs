@@ -11,7 +11,6 @@ using StayNGo.Api.Services.Interfaces;
 using StayNGo.Domain.Entities;
 using StayNGo.Domain.Enums;
 using StayNGo.Domain.Exceptions;
-using StayNGo.Domain.ValueObjects;
 
 namespace StayNGo.IntegrationTests.Listings;
 
@@ -216,7 +215,7 @@ public class ListingServiceTests(IntegrationTestFactory factory) : BaseIntegrati
     {
         await ClearListingsAsync();
         var listing = await SeedPublishedAsync();
-        await SeedConfirmedBookingAsync(listing.Id, new DateOnly(2026, 7, 1), new DateOnly(2026, 7, 5));
+        await SeedBookingOnListingAsync(listing.Id, new DateOnly(2026, 7, 1), new DateOnly(2026, 7, 5));
 
         // requested Jul 3–6 overlaps the Jul 1–5 stay
         var result = await Service.GetListings(new GetListingFilter
@@ -233,7 +232,7 @@ public class ListingServiceTests(IntegrationTestFactory factory) : BaseIntegrati
     {
         await ClearListingsAsync();
         var listing = await SeedPublishedAsync();
-        await SeedConfirmedBookingAsync(listing.Id, new DateOnly(2026, 7, 1), new DateOnly(2026, 7, 5));
+        await SeedBookingOnListingAsync(listing.Id, new DateOnly(2026, 7, 1), new DateOnly(2026, 7, 5));
 
         // checkout day (Jul 5) == requested check-in → half-open, no overlap
         var result = await Service.GetListings(new GetListingFilter
@@ -251,7 +250,7 @@ public class ListingServiceTests(IntegrationTestFactory factory) : BaseIntegrati
         await ClearListingsAsync();
         var listing = await SeedPublishedAsync();
         // a Pending booking must not block availability — only Confirmed does
-        await SeedConfirmedBookingAsync(listing.Id, new DateOnly(2026, 7, 1), new DateOnly(2026, 7, 5),
+        await SeedBookingOnListingAsync(listing.Id, new DateOnly(2026, 7, 1), new DateOnly(2026, 7, 5),
             status: BookingStatus.Pending);
 
         var result = await Service.GetListings(new GetListingFilter
@@ -271,33 +270,13 @@ public class ListingServiceTests(IntegrationTestFactory factory) : BaseIntegrati
         DbContext.ChangeTracker.Clear();
     }
 
-    private async Task<Booking> SeedConfirmedBookingAsync(
+    private async Task SeedBookingOnListingAsync(
         Guid listingId, DateOnly checkIn, DateOnly checkOut, BookingStatus status = BookingStatus.Confirmed)
     {
-        var guest = new User
-        {
-            Id = Guid.CreateVersion7(),
-            ClerkId = $"guest-{Guid.NewGuid():N}",
-            Email = $"guest-{Guid.NewGuid():N}@integration.test",
-            DisplayName = "Guest",
-        };
-        var booking = new Booking
-        {
-            Id = Guid.CreateVersion7(),
-            ListingId = listingId,
-            GuestUserId = guest.Id,
-            CheckIn = checkIn,
-            CheckOut = checkOut,
-            TotalPrice = new Money(20000, "EUR"),
-            Status = status,
-        };
-
-        DbContext.Users.Add(guest);
-        DbContext.Bookings.Add(booking);
-        await DbContext.SaveChangesAsync();
+        var listing = await DbContext.Listings.FindAsync(listingId);
+        var guest = await SeedUserAsync($"guest-{Guid.NewGuid():N}@integration.test", "Guest");
+        await SeedBookingAsync(listing!, guest, checkIn, checkOut, status);
         DbContext.ChangeTracker.Clear();
-
-        return booking;
     }
 
     private async Task<ListingContract> SeedPublishedAsync(

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using StayNGo.Domain.Entities;
+using StayNGo.Domain.Exceptions;
 using StayNGo.Domain.Interfaces;
 using StayNGo.Domain.ValueObjects;
 using StayNGo.Infrastructure.Persistence.Converters;
@@ -18,7 +20,7 @@ public class StayNGoDbContext(DbContextOptions<StayNGoDbContext> options) : DbCo
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(StayNGoDbContext).Assembly);
     }
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var now = DateTime.UtcNow;
 
@@ -34,7 +36,20 @@ public class StayNGoDbContext(DbContextOptions<StayNGoDbContext> options) : DbCo
             }
         }
 
-        return base.SaveChangesAsync(cancellationToken);
+        try
+        {
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex)
+        {
+            if ((ex.InnerException as PostgresException)?.SqlState.Contains("23P01") == true)
+            {
+                throw new DomainException(
+                    "Action cannot be performed because a record with the same data already exists.");
+            }
+
+            throw;
+        }
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)

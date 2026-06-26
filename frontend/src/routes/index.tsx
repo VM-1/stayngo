@@ -6,8 +6,8 @@ import { MainLayout } from "@/layouts/MainLayout";
 import AccountPage from "@/pages/AccountPage";
 import BookingConfirmedPage from "@/pages/BookingConfirmedPage";
 import CreateListingPage from "@/pages/CreateListingPage";
-import HostBookingsPage from "@/pages/HostBookingsPage";
 import HostListingsPage from "@/pages/HostListingsPage";
+import HostReservationsPage from "@/pages/HostReservationsPage";
 import HostPage from "@/pages/HostPage";
 import LandingPage from "@/pages/LandingPage";
 import ListingDetailPage from "@/pages/ListingDetailPage";
@@ -36,10 +36,10 @@ export const AppRoutes = () => {
             { path: "account", element: <AccountPage /> },
             { path: "reserve", element: <ReservePage /> },
             { path: "booking-confirmed", element: <BookingConfirmedPage /> },
-            { path: "my/bookings", element: <TripsPage /> },
+            { path: "trips", element: <TripsPage /> },
             { path: "host", element: <HostPage /> },
             { path: "host/listings", element: <HostListingsPage /> },
-            { path: "host/bookings", element: <HostBookingsPage /> },
+            { path: "host/reservations", element: <HostReservationsPage /> },
             { path: "host/new", element: <CreateListingPage /> },
           ],
         },

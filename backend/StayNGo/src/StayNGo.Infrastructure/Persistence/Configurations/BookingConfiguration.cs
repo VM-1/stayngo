@@ -10,5 +10,6 @@ public class BookingConfiguration : BaseEntityTypeConfiguration<Booking>
         base.Configure(builder);
 
         builder.HasIndex(x => new { x.ListingId, x.CheckIn, x.CheckOut });
+        builder.HasIndex(x => new { x.GuestUserId, x.IdempotencyKey }).IsUnique();
     }
 }

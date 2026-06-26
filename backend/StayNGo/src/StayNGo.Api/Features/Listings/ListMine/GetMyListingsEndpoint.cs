@@ -11,9 +11,9 @@ public class GetMyListingsEndpoint : IEndpoint
         groups.MapGet("", GetMyListings);
     }
 
-    private static async Task<IResult> GetMyListings(IListingService listingService,
+    private static async Task<IResult> GetMyListings(IListingService service,
         [AsParameters] GetMyListingsFilter filter)
     {
-        return Results.Ok(await listingService.GetCurrentUserOwnListingsAsync(filter));
+        return Results.Ok(await service.GetCurrentUserOwnListingsAsync(filter));
     }
 }

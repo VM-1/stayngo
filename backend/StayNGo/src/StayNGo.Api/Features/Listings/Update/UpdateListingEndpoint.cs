@@ -14,24 +14,24 @@ public class UpdateListingEndpoint : IEndpoint
         groups.MapPut("publish/{id:guid}", PublishListing);
     }
 
-    private static async Task<IResult> PublishListing(IListingService listingService, Guid id)
+    private static async Task<IResult> PublishListing(IListingService service, Guid id)
     {
-        return Results.Ok(await listingService.PublishListing(id));
+        return Results.Ok(await service.PublishListing(id));
     }
     
-    private static async Task<IResult> ArchiveListing(IListingService listingService, Guid id)
+    private static async Task<IResult> ArchiveListing(IListingService service, Guid id)
     {
-        return Results.Ok(await listingService.Archive(id));
+        return Results.Ok(await service.Archive(id));
     }
-    private static async Task<IResult> UpdateDraftListing(IListingService listingService,
+    private static async Task<IResult> UpdateDraftListing(IListingService service,
         UpsertListingRequest request, Guid id)
     {
-        return Results.Ok(await listingService.UpdateDraftListing(id,request));
+        return Results.Ok(await service.UpdateDraftListing(id,request));
     }
 
-    private static async Task<IResult> UpdatePublishedListing(IListingService listingService,
+    private static async Task<IResult> UpdatePublishedListing(IListingService service,
         UpdatePublishedListingRequest request, Guid id)
     {
-        return Results.Ok(await listingService.UpdatePublishedListing(id,request));
+        return Results.Ok(await service.UpdatePublishedListing(id,request));
     }
 }

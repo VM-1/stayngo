@@ -10,7 +10,7 @@ export default function BookingConfirmedPage() {
       <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
         <Check className="size-8" />
       </div>
-      <Text variant="h1">You&apos;re booked!</Text>
+      <Text variant="h1">You&apos;re all set!</Text>
       <Text variant="body" tone="muted">
         Sunlit loft in the old town · Jun 20 – 24, 2026 · 2 guests
       </Text>
@@ -19,7 +19,7 @@ export default function BookingConfirmedPage() {
       </Text>
       <div className="flex gap-3">
         <Button size="lg" asChild>
-          <Link to="/my/bookings">View trip</Link>
+          <Link to="/trips">View trip</Link>
         </Button>
         <Button size="lg" variant="outline" asChild>
           <Link to="/">Back to home</Link>
