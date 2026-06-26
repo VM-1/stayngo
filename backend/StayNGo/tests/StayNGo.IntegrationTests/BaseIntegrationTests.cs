@@ -64,7 +64,7 @@ public class BaseIntegrationTests : IClassFixture<IntegrationTestFactory>
                 booking.Reject();
                 break;
             case BookingStatus.Cancelled:
-                booking.Cancel();
+                booking.Cancel(DateTimeOffset.UtcNow, listing.TimeZone!);
                 break;
             case BookingStatus.Pending:
             case BookingStatus.Completed:

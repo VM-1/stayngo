@@ -12,4 +12,5 @@ public interface IBookingService
     Task<PageResult<ReservationContract>> GetReservations(GetBookingFilter filter);
     Task<BookingContract> ConfirmReservation(Guid bookingId);
     Task<BookingContract> RejectReservation(Guid bookingId);
+    Task<BookingContract> CancelTrip(Guid bookingId);
 }

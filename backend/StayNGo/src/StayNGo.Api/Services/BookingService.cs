@@ -15,6 +15,25 @@ namespace StayNGo.Api.Services;
 
 public class BookingService(StayNGoDbContext db, ICurrentUserService currentUserService) : IBookingService
 {
+    public async Task<BookingContract> CancelTrip(Guid bookingId)
+    {
+        var user = await currentUserService.GetAsync();
+        var booking = await db.Bookings
+            .Include(x => x.Listing)
+            .Where(x => x.Id == bookingId)
+            .Where(x => x.GuestUserId == user.Id)
+            .SingleOrDefaultAsync();
+
+        if (booking is null)
+        {
+            throw new RecordNotFoundException(nameof(Booking), bookingId);
+        }
+
+        booking.Cancel(DateTimeOffset.UtcNow, booking.Listing.TimeZone!);
+        await db.SaveChangesAsync();
+        return BookingContract.FromDomain(booking);
+    }
+
     public async Task<PageResult<BookingContract>> GetMyTrips(GetBookingFilter filter)
     {
         var user = await currentUserService.GetAsync();
@@ -79,8 +98,8 @@ public class BookingService(StayNGoDbContext db, ICurrentUserService currentUser
         {
             // Same (guest, idempotency key) already created a booking — replay it instead of creating a duplicate.
             db.ChangeTracker.Clear();
-            var existing = await db.Bookings.SingleAsync(
-                x => x.GuestUserId == user.Id && x.IdempotencyKey == idempotencyKey);
+            var existing =
+                await db.Bookings.SingleAsync(x => x.GuestUserId == user.Id && x.IdempotencyKey == idempotencyKey);
             return BookingContract.FromDomain(existing);
         }
 
