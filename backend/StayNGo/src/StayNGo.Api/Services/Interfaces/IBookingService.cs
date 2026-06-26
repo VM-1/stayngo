@@ -7,7 +7,7 @@ namespace StayNGo.Api.Services.Interfaces;
 
 public interface IBookingService
 {
-    Task<BookingContract> CreateAsync(CreateBookingRequest request);
+    Task<BookingContract> CreateAsync(CreateBookingRequest request, Guid idempotencyKey);
     Task<PageResult<BookingContract>> GetMyTrips(GetBookingFilter filter);
     Task<PageResult<ReservationContract>> GetReservations(GetBookingFilter filter);
     Task<BookingContract> ConfirmReservation(Guid bookingId);
