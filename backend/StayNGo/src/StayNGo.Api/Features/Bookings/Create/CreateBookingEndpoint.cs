@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using StayNGo.Api.Features.Listings;
 using StayNGo.Api.Services.Interfaces;
 
@@ -13,14 +14,16 @@ public class CreateBookingEndpoint : IEndpoint
         groups.MapPost("", CreateBooking);
     }
 
-    private static async Task<IResult> CreateBooking(IBookingService service, CreateBookingRequest request,
+    private static async Task<Results<Ok<BookingContract>, BadRequest<string>>> CreateBooking(
+        IBookingService service,
+        CreateBookingRequest request,
         [FromHeader(Name = "Idempotency-Key")] Guid? idempotencyKey)
     {
         if (!idempotencyKey.HasValue || idempotencyKey == Guid.Empty)
         {
-            return Results.BadRequest("Idempotency-Key header is required.");
+            return TypedResults.BadRequest("Idempotency-Key header is required.");
         }
 
-        return Results.Ok(await service.CreateAsync(request, idempotencyKey.Value));
+        return TypedResults.Ok(await service.CreateAsync(request, idempotencyKey.Value));
     }
 }

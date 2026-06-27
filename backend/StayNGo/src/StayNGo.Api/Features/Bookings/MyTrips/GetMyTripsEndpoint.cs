@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using StayNGo.Api.Features.Common;
 using StayNGo.Api.Features.Listings;
 using StayNGo.Api.Services.Interfaces;
 
@@ -13,13 +15,14 @@ public class GetMyTripsEndpoint : IEndpoint
         groups.MapPut("{id:guid}/cancel", CancelTrip);
     }
 
-    private static async Task<IResult> GetMyTrips(IBookingService service, [AsParameters] GetBookingFilter filter)
+    private static async Task<Ok<PageResult<BookingContract>>> GetMyTrips(
+        IBookingService service, [AsParameters] GetBookingFilter filter)
     {
-        return Results.Ok(await service.GetMyTrips(filter));
+        return TypedResults.Ok(await service.GetMyTrips(filter));
     }
-    private static async Task<IResult> CancelTrip(IBookingService service, Guid id)
+
+    private static async Task<Ok<BookingContract>> CancelTrip(IBookingService service, Guid id)
     {
-        return Results.Ok(await service.CancelTrip(id));
+        return TypedResults.Ok(await service.CancelTrip(id));
     }
-    
 }

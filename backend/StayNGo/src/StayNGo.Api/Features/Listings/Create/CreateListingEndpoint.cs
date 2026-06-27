@@ -1,4 +1,5 @@
-﻿using StayNGo.Api.Features.Listings.Update;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using StayNGo.Api.Features.Listings.Update;
 using StayNGo.Api.Services.Interfaces;
 
 namespace StayNGo.Api.Features.Listings.Create;
@@ -12,9 +13,8 @@ public class CreateListingEndpoint : IEndpoint
         groups.MapPost("", CreateListing);
     }
 
-    private static async Task<IResult> CreateListing(IListingService listingService, UpsertListingRequest request)
+    private static async Task<Ok<ListingContract>> CreateListing(IListingService service, UpsertListingRequest request)
     {
-        return Results.Ok(await listingService.CreateAsync(request));
-
+        return TypedResults.Ok(await service.CreateAsync(request));
     }
 }

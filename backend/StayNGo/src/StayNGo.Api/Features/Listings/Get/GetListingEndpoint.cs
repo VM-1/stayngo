@@ -1,4 +1,6 @@
-﻿using StayNGo.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
+using StayNGo.Api.Features.Common;
+using StayNGo.Api.Services.Interfaces;
 
 namespace StayNGo.Api.Features.Listings.Get;
 
@@ -12,14 +14,14 @@ public class GetListingEndpoint : IEndpoint
         groups.MapGet("{id:guid}", GetListingById);
     }
 
-    private static async Task<IResult> GetListings(IListingService service,
+    private static async Task<Ok<PageResult<ListingContract>>> GetListings(IListingService service,
         [AsParameters] GetListingFilter filter)
     {
-        return Results.Ok(await service.GetListings(filter));
+        return TypedResults.Ok(await service.GetListings(filter));
     }
 
-    private static async Task<IResult> GetListingById(IListingService listingService, Guid id)
+    private static async Task<Ok<ListingContract>> GetListingById(IListingService service, Guid id)
     {
-        return Results.Ok(await listingService.GetListingAsync(id));
+        return TypedResults.Ok(await service.GetListingAsync(id));
     }
 }
