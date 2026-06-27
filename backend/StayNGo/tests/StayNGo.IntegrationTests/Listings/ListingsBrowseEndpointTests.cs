@@ -16,4 +16,16 @@ public class ListingsBrowseEndpointTests(IntegrationTestFactory factory) : BaseI
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
+
+    // Enums must serialize as their name ("Published"), not the int (1), so the UI shows a label.
+    [Fact]
+    public async Task GetListings_SerializesEnumStatusAsString()
+    {
+        var host = await SeedUserAsync($"host-{Guid.NewGuid():N}@it.test", "host");
+        await SeedPublishedListingAsync(host);
+
+        var json = await Factory.CreateClient().GetStringAsync("/listings");
+
+        json.Should().Contain("\"status\":\"Published\"");
+    }
 }

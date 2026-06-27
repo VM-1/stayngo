@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using StayNGo.Api.Exceptions;
 using StayNGo.Api.Features;
@@ -11,6 +12,12 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
     {
+        // Serialize enums as their names ("Confirmed") rather than ints (2) on the wire.
+        services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
+
         services.AddCors(options =>
         {
             var origins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
