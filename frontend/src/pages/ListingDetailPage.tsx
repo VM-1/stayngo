@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { Users } from "lucide-react";
 
 import Container from "@/components/Container";
+import ImageCarousel from "@/components/ImageCarousel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
@@ -61,15 +62,11 @@ export default function ListingDetailPage() {
         </Text>
       </div>
 
-      <div className="relative h-[420px] overflow-hidden rounded-xl bg-gradient-to-br from-primary/70 to-primary">
-        {listing.mainImageUrl && (
-          <img
-            src={listing.mainImageUrl}
-            alt={listing.title ?? "Listing"}
-            className="absolute inset-0 size-full object-cover"
-          />
-        )}
-      </div>
+      <ImageCarousel
+        images={listing.imageUrls.length > 0 ? listing.imageUrls : listing.mainImageUrl ? [listing.mainImageUrl] : []}
+        alt={listing.title ?? "Listing"}
+        className="h-[420px]"
+      />
 
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
         <div className="flex flex-1 flex-col gap-6">
