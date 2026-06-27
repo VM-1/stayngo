@@ -76,7 +76,7 @@ public class ListingService(StayNGoDbContext db, ICurrentUserService currentUser
         var listings = await query.OrderBy(x => x.CreatedAt).ApplyPagination(filter).ToListAsync();
 
         return new PageResult<ListingContract>(
-            ListingContract.From(listings), filter.Page, filter.PageSize, totalCount);
+            ListingContract.From(listings), filter.EffectivePage, filter.EffectivePageSize, totalCount);
     }
 
     public async Task<PageResult<ListingContract>> GetCurrentUserOwnListingsAsync(GetMyListingsFilter filter)
@@ -93,8 +93,10 @@ public class ListingService(StayNGoDbContext db, ICurrentUserService currentUser
         query = query.ApplyPagination(filter);
         var listings = await query.ToListAsync();
 
-        var result =
-            new PageResult<ListingContract>(ListingContract.From(listings), filter.Page, filter.PageSize, totalCount);
+        var result = new PageResult<ListingContract>(
+            ListingContract.From(listings),
+            filter.EffectivePage, filter.EffectivePageSize,
+            totalCount);
 
         return result;
     }
