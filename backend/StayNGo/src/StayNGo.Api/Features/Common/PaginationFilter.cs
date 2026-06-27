@@ -2,6 +2,9 @@
 
 public abstract class PaginationFilter
 {
-    public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 10;
+    public int? Page { get; set; }
+    public int? PageSize { get; set; }
+
+    public int EffectivePage => Math.Max(1, Page ?? 1);
+    public int EffectivePageSize => Math.Clamp(PageSize ?? 10, 1, 100);
 }
