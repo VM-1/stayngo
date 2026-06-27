@@ -1,4 +1,5 @@
-﻿using StayNGo.Api.Services.Interfaces;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using StayNGo.Api.Services.Interfaces;
 
 namespace StayNGo.Api.Features.Listings.Update;
 
@@ -14,24 +15,25 @@ public class UpdateListingEndpoint : IEndpoint
         groups.MapPut("publish/{id:guid}", PublishListing);
     }
 
-    private static async Task<IResult> PublishListing(IListingService service, Guid id)
+    private static async Task<Ok<ListingContract>> PublishListing(IListingService service, Guid id)
     {
-        return Results.Ok(await service.PublishListing(id));
-    }
-    
-    private static async Task<IResult> ArchiveListing(IListingService service, Guid id)
-    {
-        return Results.Ok(await service.Archive(id));
-    }
-    private static async Task<IResult> UpdateDraftListing(IListingService service,
-        UpsertListingRequest request, Guid id)
-    {
-        return Results.Ok(await service.UpdateDraftListing(id,request));
+        return TypedResults.Ok(await service.PublishListing(id));
     }
 
-    private static async Task<IResult> UpdatePublishedListing(IListingService service,
+    private static async Task<Ok<ListingContract>> ArchiveListing(IListingService service, Guid id)
+    {
+        return TypedResults.Ok(await service.Archive(id));
+    }
+
+    private static async Task<Ok<ListingContract>> UpdateDraftListing(IListingService service,
+        UpsertListingRequest request, Guid id)
+    {
+        return TypedResults.Ok(await service.UpdateDraftListing(id, request));
+    }
+
+    private static async Task<Ok<ListingContract>> UpdatePublishedListing(IListingService service,
         UpdatePublishedListingRequest request, Guid id)
     {
-        return Results.Ok(await service.UpdatePublishedListing(id,request));
+        return TypedResults.Ok(await service.UpdatePublishedListing(id, request));
     }
 }

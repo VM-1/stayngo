@@ -1,4 +1,6 @@
-﻿using StayNGo.Api.Features.Listings;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using StayNGo.Api.Features.Common;
+using StayNGo.Api.Features.Listings;
 using StayNGo.Api.Services.Interfaces;
 
 namespace StayNGo.Api.Features.Bookings.Reservations;
@@ -12,8 +14,9 @@ public class GetReservationsEndpoint : IEndpoint
         groups.MapGet("", GetReservations);
     }
 
-    private static async Task<IResult> GetReservations(IBookingService service, [AsParameters] GetBookingFilter filter)
+    private static async Task<Ok<PageResult<ReservationContract>>> GetReservations(
+        IBookingService service, [AsParameters] GetBookingFilter filter)
     {
-        return Results.Ok(await service.GetReservations(filter));
+        return TypedResults.Ok(await service.GetReservations(filter));
     }
 }

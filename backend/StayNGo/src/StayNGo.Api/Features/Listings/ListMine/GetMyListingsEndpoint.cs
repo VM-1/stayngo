@@ -1,4 +1,6 @@
-﻿using StayNGo.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
+using StayNGo.Api.Features.Common;
+using StayNGo.Api.Services.Interfaces;
 
 namespace StayNGo.Api.Features.Listings.ListMine;
 
@@ -11,9 +13,9 @@ public class GetMyListingsEndpoint : IEndpoint
         groups.MapGet("", GetMyListings);
     }
 
-    private static async Task<IResult> GetMyListings(IListingService service,
+    private static async Task<Ok<PageResult<ListingContract>>> GetMyListings(IListingService service,
         [AsParameters] GetMyListingsFilter filter)
     {
-        return Results.Ok(await service.GetCurrentUserOwnListingsAsync(filter));
+        return TypedResults.Ok(await service.GetCurrentUserOwnListingsAsync(filter));
     }
 }

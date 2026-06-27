@@ -1,6 +1,6 @@
-﻿using StayNGo.Api.Features.Listings;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using StayNGo.Api.Features.Listings;
 using StayNGo.Api.Services.Interfaces;
-using StayNGo.Domain.Enums;
 
 namespace StayNGo.Api.Features.Bookings.UpdateReservation;
 
@@ -14,13 +14,13 @@ public class UpdateReservationEndpoint : IEndpoint
         groups.MapPost("{id:guid}/reject", RejectReservation);
     }
 
-    private static async Task<IResult> ConfirmReservation(IBookingService service, Guid id)
+    private static async Task<Ok<BookingContract>> ConfirmReservation(IBookingService service, Guid id)
     {
-        return Results.Ok(await service.ConfirmReservation(id));
+        return TypedResults.Ok(await service.ConfirmReservation(id));
     }
 
-    private static async Task<IResult> RejectReservation(IBookingService service, Guid id)
+    private static async Task<Ok<BookingContract>> RejectReservation(IBookingService service, Guid id)
     {
-        return Results.Ok(await service.RejectReservation(id));
+        return TypedResults.Ok(await service.RejectReservation(id));
     }
 }

@@ -1,4 +1,5 @@
-﻿using StayNGo.Api.Services.Interfaces;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using StayNGo.Api.Services.Interfaces;
 
 namespace StayNGo.Api.Features.Identity.Me;
 
@@ -11,10 +12,10 @@ public class MeEndpoints : IEndpoint
         groups.MapGet("", GetMe).RequireAuthorization();
     }
 
-    private static async Task<IResult> GetMe(ICurrentUserService currentUserService)
+    private static async Task<Ok<MeResponse>> GetMe(ICurrentUserService currentUserService)
     {
         var user = await currentUserService.GetOrProvisionAsync();
 
-        return Results.Ok(new MeResponse(user.Id, user.Email, user.DisplayName));
+        return TypedResults.Ok(new MeResponse(user.Id, user.Email, user.DisplayName));
     }
 }
