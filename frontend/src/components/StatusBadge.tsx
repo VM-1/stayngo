@@ -1,20 +1,21 @@
 import { Badge } from "@/components/ui/badge";
-import type { BookingStatus, ListingStatus } from "@/lib/mock";
 
-type Status = BookingStatus | ListingStatus;
+type Variant = "success" | "warning" | "secondary" | "destructive";
 
-const variantFor: Record<Status, "success" | "warning" | "secondary" | "destructive"> = {
+const variantFor: Record<string, Variant> = {
   Confirmed: "success",
+  Published: "success",
   Active: "success",
   Pending: "warning",
   Draft: "warning",
   Completed: "secondary",
   Archived: "secondary",
   Cancelled: "destructive",
+  Rejected: "destructive",
 };
 
-export function StatusBadge({ status }: { status: Status }) {
-  return <Badge variant={variantFor[status]}>{status}</Badge>;
+export function StatusBadge({ status }: { status: string }) {
+  return <Badge variant={variantFor[status] ?? "secondary"}>{status}</Badge>;
 }
 
 export default StatusBadge;
