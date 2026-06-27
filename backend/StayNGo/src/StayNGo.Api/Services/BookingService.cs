@@ -38,6 +38,7 @@ public class BookingService(StayNGoDbContext db, ICurrentUserService currentUser
     {
         var user = await currentUserService.GetAsync();
         var query = db.Bookings
+            .Include(x => x.Listing)
             .Where(x => x.GuestUserId == user.Id)
             .OrderByDescending(x => x.CreatedAt)
             .AsQueryable();
@@ -58,6 +59,7 @@ public class BookingService(StayNGoDbContext db, ICurrentUserService currentUser
         var user = await currentUserService.GetAsync();
         var query = db.Bookings
             .Include(x => x.Guest)
+            .Include(x => x.Listing)
             .Where(x => x.Listing.OwnerUserId == user.Id)
             .OrderByDescending(x => x.Status == BookingStatus.Pending)
             .ThenByDescending(x => x.CreatedAt)

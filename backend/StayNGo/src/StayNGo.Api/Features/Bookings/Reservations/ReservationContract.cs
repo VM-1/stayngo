@@ -11,6 +11,7 @@ public record ReservationContract
     public required MoneyContract TotalPrice { get; init; } = null!;
     public required BookingStatus Status { get; init; }
     public required UserShortContract Guest { get; init; } = null!;
+    public required ListingShortContract? Listing { get; init; }
 
     public static ReservationContract FromDomain(Domain.Entities.Booking b)
     {
@@ -21,7 +22,8 @@ public record ReservationContract
             CheckOut = b.CheckOut,
             TotalPrice = MoneyContract.From(b.TotalPrice)!,
             Status = b.Status,
-            Guest = UserShortContract.FromDomain(b.Guest)
+            Guest = UserShortContract.FromDomain(b.Guest),
+            Listing = b.Listing is null ? null : ListingShortContract.FromDomain(b.Listing),
         };
     }
 
