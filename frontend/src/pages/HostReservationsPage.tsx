@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import type { Reservation } from "@/features/bookings/types";
+import { BookingStatus, bookingStatusLabel, type Reservation } from "@/features/bookings/types";
 import { useReservationActions, useReservations } from "@/features/bookings/useBookings";
 import { formatDateRange, initials } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
@@ -70,7 +70,7 @@ function ReservationRow({ reservation: r }: { reservation: Reservation }) {
           {r.listing?.title ?? "Listing"} · {formatDateRange(r.checkIn, r.checkOut)} · {formatMoney(r.totalPrice)}
         </Text>
       </div>
-      {r.status === "Pending" ? (
+      {r.status === BookingStatus.Pending ? (
         <div className="flex gap-2">
           <Button variant="outline" size="sm" disabled={busy} onClick={() => reject.mutate(r.id)}>
             Reject
@@ -80,7 +80,7 @@ function ReservationRow({ reservation: r }: { reservation: Reservation }) {
           </Button>
         </div>
       ) : (
-        <StatusBadge status={r.status} />
+        <StatusBadge status={bookingStatusLabel[r.status]} />
       )}
     </div>
   );

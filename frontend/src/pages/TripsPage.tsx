@@ -3,12 +3,12 @@ import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import type { Trip } from "@/features/bookings/types";
+import { BookingStatus, bookingStatusLabel, type Trip } from "@/features/bookings/types";
 import { useCancelTrip, useMyTrips } from "@/features/bookings/useBookings";
 import { formatDateRange } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
 
-const CANCELLABLE = new Set(["Pending", "Confirmed"]);
+const CANCELLABLE = new Set<BookingStatus>([BookingStatus.Pending, BookingStatus.Confirmed]);
 
 export default function TripsPage() {
   const { data, isPending, isError, refetch } = useMyTrips();
@@ -70,7 +70,7 @@ function TripRow({ trip }: { trip: Trip }) {
               {formatDateRange(trip.checkIn, trip.checkOut)} · {formatMoney(trip.totalPrice)}
             </Text>
           </div>
-          <StatusBadge status={trip.status} />
+          <StatusBadge status={bookingStatusLabel[trip.status]} />
         </div>
 
         {canCancel && (

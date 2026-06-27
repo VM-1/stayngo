@@ -2,7 +2,25 @@ import type { Money, PageResult } from "@/features/listings/types";
 
 export type { PageResult };
 
-export type BookingStatus = "Pending" | "Confirmed" | "Cancelled" | "Completed" | "Rejected";
+// Mirrors the backend BookingStatus enum (serialized as its integer value).
+// const-object + union (not `enum`) because the project enables `erasableSyntaxOnly`.
+export const BookingStatus = {
+  Pending: 1,
+  Confirmed: 2,
+  Cancelled: 3,
+  Completed: 4,
+  Rejected: 5,
+} as const;
+
+export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus];
+
+export const bookingStatusLabel: Record<BookingStatus, string> = {
+  [BookingStatus.Pending]: "Pending",
+  [BookingStatus.Confirmed]: "Confirmed",
+  [BookingStatus.Cancelled]: "Cancelled",
+  [BookingStatus.Completed]: "Completed",
+  [BookingStatus.Rejected]: "Rejected",
+};
 
 export type ListingShort = {
   id: string;
