@@ -2,8 +2,6 @@ import type { Money, PageResult } from "@/features/listings/types";
 
 export type { PageResult };
 
-// Mirrors the backend BookingStatus enum (serialized as its integer value).
-// const-object + union (not `enum`) because the project enables `erasableSyntaxOnly`.
 export const BookingStatus = {
   Pending: 1,
   Confirmed: 2,
