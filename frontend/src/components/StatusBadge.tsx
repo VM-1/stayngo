@@ -15,7 +15,11 @@ const variantFor: Record<string, Variant> = {
 };
 
 export function StatusBadge({ status }: { status: string }) {
-  return <Badge variant={variantFor[status] ?? "secondary"}>{status}</Badge>;
+  return (
+    <Badge variant={variantFor[status] ?? "secondary"} className="px-3 py-1">
+      {status}
+    </Badge>
+  );
 }
 
 export default StatusBadge;
