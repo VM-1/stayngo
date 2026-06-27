@@ -2,12 +2,14 @@
 
 One-screen "where are we." Read at session start; update at session end. Link tickets/PRs/ADRs — don't restate them.
 
-_Updated: 2026-06-26 · branch: `main`_
+_Updated: 2026-06-27 · branch: `main`_
 
 ## Where we are
-Phase 1. **Backend is feature-complete** — Identity (#2), Listings (#3), Search (#4), and **Booking (#5, now closed)** all shipped. Booking covers request → host confirm/reject → guest cancel (24h cut-off in listing tz) + guest "trips" / host "reservations" reads; no-double-booking GiST constraint (ADR-0007), required `Idempotency-Key` header.
+Phase 1. **Backend feature-complete.** **Frontend wiring (EPIC #6) well underway** — browse, listing detail (+ image slider), guest **Trips** (cancel), host **Reservations** (confirm/reject), and the **reserve flow** (date pick → `POST /bookings` w/ Idempotency-Key → real 409 conflict) are all live against the API (#44/#46/#47/#48 merged). Booking status mapped to labels client-side (API serializes enums as ints).
 
-**Remaining for the Phase-1 base:** wire the frontend (EPIC #6) to the live API, then deploy (#8) + observability basics (#7). Done-bar (StayNGo.md §"Done ="): a stranger registers → publishes a listing → books someone else's, on the live URL.
+**Remaining for the Phase-1 base:** wire the last host pages — **`HostListingsPage`** (`GET /host/listings`) and **`CreateListingPage`** (create draft + publish) — then deploy (#8) + observability (#7). Done-bar (StayNGo.md §"Done="): a stranger registers → publishes a listing → books someone else's, on the live URL.
+
+**Cadence note:** PRs #45 and #48 both merged *one commit early* (a trailing push missed the merge). Going forward: finish a branch, say "ready", then DON'T push more to it — new changes go on a new branch. (Leftover unmerged: `feature/frontend-wiring-bookings@9ef4c7d` drops a comment in `bookings/types.ts` — fold into next PR.)
 
 The merged #32 work (owner-scoped, by-hand):
 - Endpoints: create draft, edit-draft, edit-published (price/desc/photos only), publish, archive, list-mine (paginated) under `/host/listings`.
@@ -20,6 +22,8 @@ The merged #32 work (owner-scoped, by-hand):
 - _Nothing in flight._
 
 ## Done (latest first)
+- 2026-06-27 — **#48 merged: image slider + Trips/Reservations + reserve flow** (#46/#47 closed) — carried the commits #45 merged early; booking read DTOs gained a `ListingShortContract`; reserve = date pick → `POST /bookings` (Idempotency-Key) → real 409 banner. Status labels mapped client-side.
+- 2026-06-27 — **#45 merged: guest browse + detail on live API** (#44) — `ListingCard`/Search/Detail off mock; `lib/money`; **pagination binding fix** (`Page`/`PageSize` optional via `EffectivePage`) + HTTP regression test.
 - 2026-06-26 — **#43 merged: guest cancellation (#42 closed, EPIC #5 closed)** — `PUT /me/trips/{id}/cancel`; `Booking.Cancel(now, tz)` allowed Pending/Confirmed, rejected within 24h of check-in anchored to 15:00 in the listing's IANA timezone (`now` injected → unit-testable); cancelling a confirmed stay frees the dates. +6 entity unit + 2 integration tests
 - 2026-06-26 — **#41 merged: idempotency key → required `Idempotency-Key` header** (#40 review follow-up) — empty/missing key → 400 before insert; replay keys off the header value
 - 2026-06-25 — **#40 merged: Booking request + host confirm/reject (#39 closed, EPIC #5 slices 1+2)** — `POST /bookings` (Pending, price fixed = nights×nightly), `POST /reservations/{id}/confirm|reject` (owner-scoped guarded state machine), `GET /me/trips` + `GET /reservations` (pending-first, paginated). **GiST exclusion constraint restored** (generated `during` daterange, `EXCLUDE … WHERE status=Confirmed`) per ADR-0007 → `23P01`→`DomainException`→409. Per-user idempotency unique index + replay. Frontend Trips/Reservations wired. +tests (30 integration)
@@ -31,9 +35,9 @@ The merged #32 work (owner-scoped, by-hand):
 - ~2026-06-12 — #23/#21 merged: Docker Node 24 + container-build on PRs; shadcn baseline; ADR-0004/0005
 
 ## Next
-1. **Frontend wiring (EPIC #6)** — backend is done, so this is the main remaining base work. Pages still on `lib/mock.ts`: `SearchPage` (browse + filters + dates), `ListingDetailPage`, `TripsPage`, `HostReservationsPage`, `HostListingsPage`; plus write flows `ReservePage` (POST /bookings + Idempotency-Key header) and `CreateListingPage`. Scaffolding exists (Clerk auth, `lib/api.ts` fetch wrapper, react-query, shadcn); `AccountPage` is the wired exemplar. Per-page: endpoint hooks + swap mock + loading/error/empty states.
+1. **Last EPIC #6 pages:** `HostListingsPage` → `GET /host/listings` (no backend change; needs a `ListingStatus` label map like the booking one); `CreateListingPage` → create draft + publish (write flow). Still-mock: also search **filters + date pickers** (browse shows unfiltered list). Fold in the leftover comment-removal commit.
 2. **Deploy (#8)** + **Observability basics (#7)** — Fly.io app + managed Postgres + secrets + migrations-on-boot + serve FE + prod Clerk keys. Then run the done-bar smoke on the live URL.
-3. **db-notes owed (by-hand learning)**: `docs/db-notes/` on the GiST exclusion constraint, idempotent requests (#39), and a short note on anchoring a deadline to a place's local time (#42).
+3. **No automated FE tests yet** (Vitest + MSW) — only the type-check gates the frontend; worth a ticket before the surface grows more.
 4. Carried follow-ups (ticket if picking up): request validation (FluentValidation — `required` ≠ non-null); single-currency `Currency` filter (#35) pending a multi-currency decision.
 
 ## Cross-session gotchas (not obvious from code)
