@@ -1,8 +1,11 @@
 import { useApi } from "@/lib/useApi";
 import { useAuth } from "@clerk/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import type { PageResult, Reservation, Trip } from "./types";
+
+export type CreateBookingRequest = { listingId: string; checkIn: string; checkOut: string };
 
 const TRIPS_KEY = ["bookings", "trips"];
 const RESERVATIONS_KEY = ["bookings", "reservations"];
@@ -24,6 +27,23 @@ export function useCancelTrip() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api(`/me/trips/${id}/cancel`, { method: "PUT" }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: TRIPS_KEY }),
+  });
+}
+
+/** Create a booking — POST /bookings. A stable Idempotency-Key per hook instance
+ *  means a retried confirm (double-click, network retry) won't double-book. */
+export function useCreateBooking() {
+  const api = useApi();
+  const qc = useQueryClient();
+  const idempotencyKey = useMemo(() => crypto.randomUUID(), []);
+  return useMutation({
+    mutationFn: (req: CreateBookingRequest) =>
+      api<Trip>("/bookings", {
+        method: "POST",
+        body: JSON.stringify(req),
+        headers: { "Idempotency-Key": idempotencyKey },
+      }),
     onSuccess: () => qc.invalidateQueries({ queryKey: TRIPS_KEY }),
   });
 }

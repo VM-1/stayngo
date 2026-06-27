@@ -8,6 +8,17 @@ export function formatDateRange(checkIn: string, checkOut: string): string {
   return `${startStr} – ${endStr}`;
 }
 
+/** Whole nights between two date-only strings (check-out − check-in). */
+export function nightsBetween(checkIn: string, checkOut: string): number {
+  const ms = new Date(`${checkOut}T00:00:00`).getTime() - new Date(`${checkIn}T00:00:00`).getTime();
+  return Math.round(ms / 86_400_000);
+}
+
+/** Today as a date-only string (local), for date-input `min`. */
+export function todayIso(): string {
+  return new Date().toLocaleDateString("en-CA"); // en-CA → YYYY-MM-DD
+}
+
 /** Up-to-two-letter initials for an avatar fallback. */
 export function initials(name: string): string {
   return name

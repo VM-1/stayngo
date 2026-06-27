@@ -17,7 +17,7 @@ export function ImageCarousel({
   const [index, setIndex] = useState(0);
 
   if (images.length === 0) {
-    return <div className={cn("bg-gradient-to-br from-primary/70 to-primary", className)} />;
+    return <div className={cn("bg-linear-to-br from-primary/70 to-primary", className)} />;
   }
 
   const scrollTo = (i: number) => {
