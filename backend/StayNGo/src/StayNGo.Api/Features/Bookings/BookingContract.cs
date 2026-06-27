@@ -10,6 +10,7 @@ public record BookingContract
     public DateOnly CheckOut { get; set; }
     public MoneyContract TotalPrice { get; set; } = null!;
     public BookingStatus Status { get; set; }
+    public ListingShortContract? Listing { get; set; }
 
     public static BookingContract FromDomain(Domain.Entities.Booking b)
     {
@@ -19,7 +20,8 @@ public record BookingContract
             CheckIn = b.CheckIn,
             CheckOut = b.CheckOut,
             TotalPrice = MoneyContract.From(b.TotalPrice)!,
-            Status = b.Status
+            Status = b.Status,
+            Listing = b.Listing is null ? null : ListingShortContract.FromDomain(b.Listing),
         };
     }
 

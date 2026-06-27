@@ -128,9 +128,13 @@ public class BookingServiceTests(IntegrationTestFactory factory) : BaseIntegrati
         var otherGuest = await SeedUserAsync($"guest-{Guid.NewGuid():N}@it.test", "other");
         await SeedBookingAsync(listing, otherGuest, Aug1, Aug5, BookingStatus.Pending);
 
+        DbContext.ChangeTracker.Clear(); // force a real read so the Listing Include is exercised
+
         var result = await Service.GetMyTrips(new GetBookingFilter());
 
-        result.Items.Should().ContainSingle().Which.Id.Should().Be(mine.Id);
+        var trip = result.Items.Should().ContainSingle().Which;
+        trip.Id.Should().Be(mine.Id);
+        trip.Listing!.Title.Should().Be("Test Listing");
     }
 
     [Fact]
@@ -150,6 +154,8 @@ public class BookingServiceTests(IntegrationTestFactory factory) : BaseIntegrati
 
         result.Items.Should().HaveCount(2);
         result.Items.First().Id.Should().Be(pending.Id);
+        result.Items.First().Listing!.Title.Should().Be("Test Listing");
+        result.Items.First().Guest.Should().NotBeNull();
     }
 
     // ---- Cancel ----
