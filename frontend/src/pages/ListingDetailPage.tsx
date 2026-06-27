@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import type { ListingDetail } from "@/features/listings/types";
-import { useListing } from "@/features/listings/useListing";
+import { useListing } from "@/features/listings/useListings";
 import { ApiError } from "@/lib/api";
 import { nightsBetween, todayIso } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
