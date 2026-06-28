@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using StayNGo.Api.Exceptions;
 using StayNGo.Api.Features;
@@ -31,6 +32,7 @@ public static class DependencyInjection
         
         services.AddEndpoints(typeof(Program).Assembly);
         services.AddEndpointsApiExplorer();
+        services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
         ConfigureTokenValidation(services, configuration);
 
