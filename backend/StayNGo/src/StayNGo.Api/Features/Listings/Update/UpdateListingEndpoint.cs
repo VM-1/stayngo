@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using StayNGo.Api.Features.Common;
 using StayNGo.Api.Services.Interfaces;
 
 namespace StayNGo.Api.Features.Listings.Update;
@@ -9,8 +10,8 @@ public class UpdateListingEndpoint : IEndpoint
     {
         var groups = app.MapHostListingsGroup();
 
-        groups.MapPut("draft/{id:guid}", UpdateDraftListing);
-        groups.MapPatch("published/{id:guid}", UpdatePublishedListing);
+        groups.MapPut("draft/{id:guid}", UpdateDraftListing).WithValidation<UpsertListingRequest>();
+        groups.MapPatch("published/{id:guid}", UpdatePublishedListing).WithValidation<UpdatePublishedListingRequest>();
         groups.MapPut("archive/{id:guid}", ArchiveListing);
         groups.MapPut("publish/{id:guid}", PublishListing);
     }

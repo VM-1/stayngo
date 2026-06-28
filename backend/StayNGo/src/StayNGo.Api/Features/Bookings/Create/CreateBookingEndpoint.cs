@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using StayNGo.Api.Features.Common;
 using StayNGo.Api.Features.Listings;
 using StayNGo.Api.Services.Interfaces;
 
@@ -11,7 +12,7 @@ public class CreateBookingEndpoint : IEndpoint
     {
         var groups = app.MapBookingGroup();
 
-        groups.MapPost("", CreateBooking);
+        groups.MapPost("", CreateBooking).WithValidation<CreateBookingRequest>();
     }
 
     private static async Task<Results<Ok<BookingContract>, BadRequest<string>>> CreateBooking(
