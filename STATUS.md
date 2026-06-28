@@ -34,7 +34,16 @@ The merged #32 work (owner-scoped, by-hand):
 - 2026-06-14 — #28/#27/#25 merged: frontend `/identity/me`, backend CORS + Clerk authority, strict tsconfig
 - ~2026-06-12 — #23/#21 merged: Docker Node 24 + container-build on PRs; shadcn baseline; ADR-0004/0005
 
-## Next
+## Focus
+**Backend-only from 2026-06-28.** Frontend (EPIC #6) and deploy (#8) are **parked** — open PRs #49 (TypedResults, backend) and #51 (host pages, FE) can still merge, but no new FE/deploy work until further notice.
+
+## Backend backlog (pick-up candidates)
+- **Request validation** (deferred from #33): `required`/non-null annotations are *not* runtime validation. Add a validation layer (FluentValidation or minimal-API filters) for `CreateBookingRequest`, `UpsertListingRequest`, etc. — return 400 with field errors instead of relying on domain guards / nullable slipping through.
+- **Domain events infrastructure** (Principle 7, "event-ready from day 1"): entities currently raise *nothing*. Stand up an entity event list + dispatch on `SaveChanges`. Unblocks change-history, and Phase 3/4 (outbox, RabbitMQ) become additive.
+- **OpenAPI error documentation**: `RecordNotFoundException`→404 / `DomainException`→409 aren't in the spec; add `ProducesProblem` (or typed `Results<…, NotFound>`) so Scalar shows them (follow-on to #49).
+- **`Currency` filter decision** (#35): single-currency today — drop the filter or commit to multi-currency.
+
+## Next (FE/deploy — parked, for later)
 1. **Last EPIC #6 pages:** `HostListingsPage` → `GET /host/listings` (no backend change; needs a `ListingStatus` label map like the booking one); `CreateListingPage` → create draft + publish (write flow). Still-mock: also search **filters + date pickers** (browse shows unfiltered list). Fold in the leftover comment-removal commit.
 2. **Deploy (#8)** + **Observability basics (#7)** — Fly.io app + managed Postgres + secrets + migrations-on-boot + serve FE + prod Clerk keys. Then run the done-bar smoke on the live URL.
 3. **No automated FE tests yet** (Vitest + MSW) — only the type-check gates the frontend; worth a ticket before the surface grows more.
