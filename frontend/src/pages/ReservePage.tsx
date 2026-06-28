@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 import { useCreateBooking } from "@/features/bookings/useBookings";
-import { useListing } from "@/features/listings/useListing";
+import { useListing } from "@/features/listings/useListings";
 import { ApiError } from "@/lib/api";
 import { formatDateRange, nightsBetween } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
@@ -80,7 +80,7 @@ export default function ReservePage() {
           <Card>
             <CardContent className="flex flex-col gap-4">
               <div className="flex items-center gap-3">
-                <div className="size-16 shrink-0 overflow-hidden rounded-md bg-gradient-to-br from-primary/70 to-primary">
+                <div className="size-16 shrink-0 overflow-hidden rounded-md bg-linear-to-br from-primary/70 to-primary">
                   {listing.mainImageUrl && (
                     <img src={listing.mainImageUrl} alt={listing.title ?? "Listing"} className="size-full object-cover" />
                   )}
